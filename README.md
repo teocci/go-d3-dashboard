@@ -1,6 +1,6 @@
 ## go-d3-dashboard [![Go Reference][1]][2]
 
-`go-d3-dashboard-sample` is an open-source sample using gin-gonic as a webserver as basic clean project.
+`go-d3-dashboard` is an open-source sample using gin-gonic as a webserver as basic clean project.
 
 ## Disclaimer
 > This tool is limited to security research only, and the user assumes all legal and related responsibilities arising from its use! The author assumes no legal responsibility!
