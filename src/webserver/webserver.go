@@ -34,7 +34,7 @@ var (
 )
 
 func Start() {
-	address = fmt.Sprintf(formatAddress, GetLocalIp(), config.Data.Web.Port)
+	address = fmt.Sprintf(formatAddress, "", config.Data.Web.Port)
 	gin.SetMode(gin.ReleaseMode)
 	_ = mime.AddExtensionType(".js", "application/javascript")
 
@@ -83,7 +83,8 @@ func addressFormat(a string) string {
 }
 
 func urlFormat(a string) string {
-	s := fmt.Sprintf(formatURL, defaultProtocol, a, defaultPage)
+	host := addressFormat(a)
+	s := fmt.Sprintf(formatURL, defaultProtocol, host, defaultPage)
 
 	return s
 }
