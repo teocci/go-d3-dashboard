@@ -4,6 +4,10 @@
  */
 
 const isBoolean = b => 'boolean' === typeof b
+const isNumber = n => 'number' === typeof n
+const isString = s => 'string' === typeof s
+const isNull = a => a == null
+const isUndefined = a => a === undefined
 
 const serialize = o => JSON.stringify(o)
 

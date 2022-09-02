@@ -15,13 +15,14 @@ export default class Dashboard extends BaseComponent {
     }
 
     initElements() {
-        const holder = document.createElement('div')
-        holder.classList.add('dashboard-holder')
+        const dashboard = document.createElement('div')
+        dashboard.classList.add('dashboard-holder')
 
         const widget = this.createEmptyWidget()
-        holder.appendChild(widget)
+        dashboard.appendChild(widget)
 
-        this.dom.appendChild(holder)
+        this.dom = dashboard
+        this.holder.appendChild(dashboard)
     }
 
     createEmptyWidget() {

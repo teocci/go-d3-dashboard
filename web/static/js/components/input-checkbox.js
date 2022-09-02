@@ -8,37 +8,40 @@ export default class InputCheckbox extends BaseField {
     static TAG = 'checkbox'
 
     static DEFAULT_OPTIONS = {
-        title: undefined,
-        groupName: undefined,
+        legend: undefined,
+        ckbName: undefined,
         checkboxes: undefined,
     }
 
     constructor(element, options) {
         super(element, options)
+
         this.initElement()
     }
 
     initElement() {
         const options = this.options
-        if (options.checkboxes == null) throw Error('invalidCheckboxes: null checkboxes')
-        if (options.checkboxes.length === 0) throw Error('invalidCheckboxes: empty checkboxes')
+        if (isNull(options.checkboxes)) throw Error('invalidParameter: null checkboxes')
+        if (options.checkboxes.length === 0) throw Error('invalidParameter: empty checkboxes')
 
-        const div = document.createElement('div')
-        options.text ? div.textContent = options.title : null
+        const field = document.createElement('div')
+        if (!isNull(options.legend)) field.textContent = options.title
 
         options.checkboxes.forEach(checkbox => {
             const label = document.createElement('label')
-            checkbox.id ? label.htmlFor = checkbox.id : null
-            checkbox.label ? label.textContent = checkbox.label : null
+            if (!isNull(checkbox.id)) label.htmlFor = checkbox.id
+            if (!isNull(checkbox.label)) label.textContent = checkbox.label
 
             const input = document.createElement('input')
             input.type = InputCheckbox.TAG
-            checkbox.id ? input.id = checkbox.id : null
-            checkbox.checked ? input.checked = checkbox.checked : null
+            if (!isNull(checkbox.id)) input.id = checkbox.id
+            if (!isNull(checkbox.checked)) input.checked = checkbox.checked
+            if (!isNull(options.ckbName)) input.name = options.ckbName
 
-            options.groupName ? input.name = options.groupName : null
-
-            div.append(label, input)
+            field.append(label, input)
         })
+
+        this.dom = field
+        this.holder.append(field)
     }
 }

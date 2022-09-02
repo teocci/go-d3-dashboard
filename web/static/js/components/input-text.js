@@ -8,8 +8,8 @@ export default class InputText extends BaseField {
     static TAG = 'text'
 
     static DEFAULT_OPTIONS = {
-        id: undefined,
-        text: undefined,
+        id: InputText.TAG,
+        label: undefined,
         name: undefined,
         required: undefined,
         minLength: undefined,
@@ -18,30 +18,32 @@ export default class InputText extends BaseField {
     }
 
     constructor(element, options) {
-        super(element)
+        super(element, options)
 
-        this.options = Object.assign(InputText.DEFAULT_OPTIONS, options)
         this.initElement()
     }
 
     initElement() {
         const options = this.options
         console.log(options)
-        const div = document.createElement('div')
+        const field = document.createElement('div')
 
         const label = document.createElement('label')
-        options.id ? label.htmlFor = options.id : null
-        options.text ? label.textContent = options.text : null
+        if (options.id) label.htmlFor = options.id
+        if (options.label) label.textContent = options.label
 
         const input = document.createElement('input')
         input.type = InputText.TAG
-        options.minLength ? input.id = options.id : null
-        options.maxLength ? input.name = options.name : null
-        options.requiered ? input.requiered = options.requiered : null
-        options.minLength ? input.minLength = options.minLength : null
-        options.maxLength ? input.maxLength = options.maxLength : null
-        options.size ? input.size = options.size : null
+        input.id = options.id
+        input.requiered = options.requiered
+        if (options.name) input.name = options.name
+        if (options.minLength) input.minLength = options.minLength
+        if (options.maxLength) input.maxLength = options.maxLength
+        if (options.size) input.size = options.size
 
-        div.append(label, input)
+        field.append(label, input)
+
+        this.dom = field
+        this.holder.appendChild(field)
     }
 }

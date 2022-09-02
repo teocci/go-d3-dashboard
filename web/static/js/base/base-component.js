@@ -21,14 +21,22 @@ export default class BaseComponent extends BaseListener {
     constructor(element) {
         super()
 
+        this.holder = element
+    }
+
+    get holder() {
+        return this.placeholder
+    }
+
+    set holder(element) {
         this.placeholder = element
     }
 
-    get placeholder() {
+    get dom() {
         return this.element
     }
 
-    set placeholder(element) {
+    set dom(element) {
         this.element = element
     }
 
@@ -53,9 +61,5 @@ export default class BaseComponent extends BaseListener {
             const lastChild = element.lastChild ?? false
             if (lastChild) element.removeChild(lastChild)
         }
-    }
-
-    get dom() {
-        return this.placeholder
     }
 }
