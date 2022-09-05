@@ -12,6 +12,7 @@ export default class InputText extends BaseField {
         label: undefined,
         name: undefined,
         required: undefined,
+        placeholder: undefined,
         minLength: undefined,
         maxLength: undefined,
         size: undefined,
@@ -25,7 +26,7 @@ export default class InputText extends BaseField {
 
     initElement() {
         const options = this.options
-        console.log(options)
+
         const field = document.createElement('div')
 
         const label = document.createElement('label')
@@ -37,6 +38,7 @@ export default class InputText extends BaseField {
         input.id = options.id
         input.requiered = options.requiered
         if (options.name) input.name = options.name
+        if (options.placeholder) input.placeholder = options.placeholder
         if (options.minLength) input.minLength = options.minLength
         if (options.maxLength) input.maxLength = options.maxLength
         if (options.size) input.size = options.size

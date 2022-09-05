@@ -25,6 +25,7 @@ export default class Fieldset extends BaseComponent {
 
     initElements() {
         const options = this.options
+
         const fieldset = document.createElement('fieldset')
         const legend = document.createElement('legend')
         if (!isNull(options.legend)) legend.textContent = this.options.legend
