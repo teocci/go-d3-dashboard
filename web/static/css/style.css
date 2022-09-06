@@ -4,6 +4,7 @@
  */
 @import "variables.css";
 @import "default.css";
+@import "modal.css";
 
 main {
     width: 100vw;

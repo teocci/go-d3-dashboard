@@ -1,0 +1,77 @@
+/**
+ * Created by RTT.
+ * Author: teocci@yandex.com on 2022-9월-06
+ */
+
+.modal-outside {
+    background: rgba(0, 0, 0, 0.5);
+    /* background: transparent; */
+    /* position: absolute; */
+    position: fixed;
+    z-index: 9; /* .modal[zIndex] - 1 */
+    bottom: 0;
+    right: 0;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    display: none;
+}
+
+.modal-wrapper:not(.hidden) ~ .modal-outside {
+    display: block;
+}
+
+.modal-wrapper {
+    position: absolute;
+    top: calc(50vh - var(--modal-height) / 2);
+    left: calc(50vw - var(--modal-width) / 2);
+    width: var(--modal-width);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: var(--z-modal);
+    background: var(--bg-white);
+}
+
+.modal-wrapper.hidden {
+    opacity: 0;
+    transition: opacity 0.25s ease-in-out;
+}
+
+.modal-wrapper {
+    opacity: 1;
+}
+
+.modal-wrapper section {
+    width: var(--modal-width);
+    z-index: calc(var(--z-modal) + 1);
+}
+
+.modal-wrapper .modal-header {
+    cursor: move;
+    user-select: none;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    background: var(--main-accent-color);
+    color: var(--font-light-color);
+    line-height: 2rem;
+}
+
+.modal-wrapper .modal-header .title {
+    padding-left: 5px;
+}
+
+.modal-wrapper .modal-header .close {
+    cursor: pointer;
+    height: 2em;
+    width: 2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-wrapper .modal-content {
+    max-height: calc(var(--modal-height) - 65px);
+}

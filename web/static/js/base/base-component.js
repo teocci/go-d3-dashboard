@@ -19,6 +19,7 @@ export default class BaseComponent extends BaseListener {
     }
 
     constructor(element) {
+        if (!element) throw 'InvalidParameter: null element'
         super()
 
         this.holder = element
@@ -53,6 +54,10 @@ export default class BaseComponent extends BaseListener {
     hide() {
         const element = this.dom
         element.classList.add('hidden')
+    }
+
+    get tag () {
+        return this.constructor.TAG
     }
 
     destroyChildren(element) {

@@ -5,21 +5,21 @@
 import Draggable from './draggable.js'
 
 export default class Modal extends Draggable {
+    static TAG = 'modal'
+
     constructor(element) {
-        if (!element) throw 'InvalidParameter: null element'
         super(element)
 
         this.content = null
-        this.table = null
 
         this.createPanel()
-        this.startDragEvent(this.header)
+        this.registerDraggable(this.header)
         this.hide()
     }
 
     createPanel() {
         const modal = document.createElement('div')
-        modal.classList.add('modal-holder')
+        modal.classList.add('modal-wrapper')
 
         const section = document.createElement('section')
         section.classList.add('modal-section')
@@ -44,9 +44,9 @@ export default class Modal extends Draggable {
         const content = document.createElement('div')
         content.classList.add('modal-content')
 
-        // const trigger = document.createElement('div')
-        // trigger.classList.add('outside-trigger')
-        // trigger.onclick = e => this.close(e)
+        const trigger = document.createElement('div')
+        trigger.classList.add('modal-outside')
+        trigger.onclick = e => this.close(e)
 
         this.header = header
         this.content = content
@@ -57,8 +57,9 @@ export default class Modal extends Draggable {
         section.append(header, content)
         modal.appendChild(section)
 
+        this.body = content
         this.dom = modal
-        this.holder.appendChild(modal)
+        this.holder.append(modal, trigger)
     }
 
     close(e) {

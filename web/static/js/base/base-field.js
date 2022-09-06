@@ -2,31 +2,22 @@
  * Created by RTT.
  * Author: teocci@yandex.com on 2022-9월-01
  */
-import BaseComponent from './base-component.js'
+import BaseInput from './base-input.js'
 
-export default class BaseField extends BaseComponent {
-    static DEFAULT_INPUT_OPTIONS = {
-        id: undefined,
-        label: undefined,
-        checked: undefined,
-        value: undefined,
-    }
-
+export default class BaseField extends BaseInput {
     constructor(element, options) {
-        super(element)
+        super(element, options)
 
-        this.options = Object.assign(this.defaultOptions, options)
-        if (this.options.inputs) {
+        if (this.options && !isNull(this.options.inputs) && this.options.inputs.length > 0) {
             const inputs = []
-            for (const input of this.options.inputs) {
-                inputs.push(simpleMerge(BaseField.DEFAULT_INPUT_OPTIONS, input))
+            for (const raw of this.options.inputs) {
+                const input = simpleMerge(BaseField.DEFAULT_INPUT_OPTIONS, raw)
+                input.label = input.label ?? this.tag
+                input.name = input.name ?? `${this.options.group}`
+                inputs.push(input)
             }
-            this.options.inputs = inputs
+            this.options.inputs = [...inputs]
         }
         console.log({options: this.options})
-    }
-
-    get defaultOptions () {
-        return this.constructor.DEFAULT_OPTIONS
     }
 }

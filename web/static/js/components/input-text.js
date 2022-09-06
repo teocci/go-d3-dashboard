@@ -2,9 +2,9 @@
  * Created by RTT.
  * Author: teocci@yandex.com on 2022-9월-01
  */
-import BaseField from '../base/base-field.js'
+import BaseInput from '../base/base-input.js'
 
-export default class InputText extends BaseField {
+export default class InputText extends BaseInput {
     static TAG = 'text'
 
     static DEFAULT_OPTIONS = {
@@ -26,6 +26,7 @@ export default class InputText extends BaseField {
 
     initElement() {
         const options = this.options
+        console.log({options})
 
         const field = document.createElement('div')
 

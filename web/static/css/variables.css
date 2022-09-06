@@ -4,6 +4,12 @@
  */
 
 :root {
+    --white: hsl(0, 0%, 100%);
+    --light-gray: hsl(0, 0%, 96%);
+    --light-gray-l87: hsl(0, 0%, 87%);
+    --light-gray-l80: hsl(0, 0%, 80%);
+    --gray: hsl(0, 0%, 50%);
+
     --font-light-color: hsl(0, 0%, 100%);
     --font-light-color-l60: hsl(0, 0%, 60%);
     --font-light-color-l20: hsl(0, 0%, 20%);
@@ -11,6 +17,7 @@
     --font-mild-color: hsl(210, 1%, 40%);
     --font-dark-color: hsl(210, 2%, 20%);
 
+    --bg-white: hsl(0, 0%, 100%);
     --bg-light-gray: hsl(0, 0%, 96%);
     --bg-light-gray-l93: hsl(0, 0%, 93%);
     --bg-light-gray-l86: hsl(0, 0%, 86%);
@@ -23,12 +30,15 @@
 
     --dark-gray-bg: hsl(210, 2%, 20%);
 
+    --main-accent-color: hsl(211, 100%, 57%);
+
     --summary-width: 280px;
-    --modal-width: 700px;
+    --modal-width: 600px;
     --modal-height: 520px;
 
     --footer-height: 32px;
 
     --z-summary: 100;
-    --z-modal: 200;
+    --z-modal-bg: 200;
+    --z-modal: 201;
 }

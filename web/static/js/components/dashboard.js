@@ -24,11 +24,6 @@ export default class Dashboard extends BaseComponent {
 
         const widget = new Widget(dashboard)
 
-        const fs = new Fieldset(dashboard, TEST_FIELDS.fieldset)
-        const it = new InputText(dashboard, TEST_FIELDS.text)
-        const cbGroup = new InputCheckbox(dashboard, TEST_FIELDS.checkbox)
-        fs.addField(it.dom, cbGroup.dom)
-
         dashboard.appendChild(widget.dom)
 
         this.dom = dashboard

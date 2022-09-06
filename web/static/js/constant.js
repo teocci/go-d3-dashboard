@@ -7,7 +7,7 @@ let mainModule
 
 const TEST_FIELDS = {
     fieldset: {
-        legend : 'Test Fieldset',
+        legend: 'Test Fieldset',
     },
     text: {
         label: 'Input Text',
@@ -16,6 +16,42 @@ const TEST_FIELDS = {
     checkbox: {
         legend: 'City',
         ckbName: 'cb-city',
+        inputs: [
+            {
+                id: 'huey',
+                label: 'Huey',
+                value: 'huey',
+                checked: true,
+            },
+            {
+                id: 'dewey',
+                label: 'Dewey',
+                value: 'dewey',
+                checked: false,
+            },
+            {
+                id: 'louie',
+                label: 'Louie',
+                value: 'louie',
+                checked: false,
+            },
+        ],
+    },
+}
+
+const BASE_FORM = {
+    'data-input': {
+        type: 'fieldset',
+        legend: 'Data Input',
+    },
+    text: {
+        label: 'Input Text',
+        placeholder: 'Enter your name',
+    },
+    checkbox: {
+        type: 'checkbox',
+        legend: 'City',
+        group: 'cb-city',
         inputs: [
             {
                 id: 'huey',
