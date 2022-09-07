@@ -10,6 +10,7 @@ export default class Modal extends Draggable {
     constructor(element) {
         super(element)
 
+        this.header = null
         this.content = null
 
         this.createPanel()
@@ -56,8 +57,6 @@ export default class Modal extends Draggable {
 
         section.append(header, content)
         modal.appendChild(section)
-
-        this.body = content
         this.dom = modal
         this.holder.append(modal, trigger)
     }
@@ -66,15 +65,18 @@ export default class Modal extends Draggable {
         console.log({target: e.target, current: e.currentTarget})
         e.preventDefault()
         e.stopPropagation()
-        if (e.target === e.currentTarget || e.target.parentNode.isCloseBtn) this.hide()
+        if (e.target === e.currentTarget || e.target.parentNode.isCloseBtn) this.reset()
     }
 
     reset() {
         this.hide()
-        this.destroyChildren(this.content)
-    }
 
-    show() {
-        super.show()
+        const content = this.holder.querySelector('.modal-wrapper')
+        const trigger = this.holder.querySelector('.modal-outside')
+        content.remove()
+        trigger.remove()
+
+        this.header = null
+        this.content = null
     }
 }

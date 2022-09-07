@@ -8,6 +8,7 @@ export default class InputText extends BaseInput {
     static TAG = 'text'
 
     static DEFAULT_OPTIONS = {
+        type: InputText.TAG,
         id: InputText.TAG,
         label: undefined,
         name: undefined,
@@ -26,27 +27,12 @@ export default class InputText extends BaseInput {
 
     initElement() {
         const options = this.options
-        console.log({options})
 
-        const field = document.createElement('div')
-
-        const label = document.createElement('label')
-        if (options.id) label.htmlFor = options.id
-        if (options.label) label.textContent = options.label
-
-        const input = document.createElement('input')
-        input.type = InputText.TAG
-        input.id = options.id
+        const input = this.input
         input.requiered = options.requiered
-        if (options.name) input.name = options.name
         if (options.placeholder) input.placeholder = options.placeholder
         if (options.minLength) input.minLength = options.minLength
         if (options.maxLength) input.maxLength = options.maxLength
         if (options.size) input.size = options.size
-
-        field.append(label, input)
-
-        this.dom = field
-        this.holder.appendChild(field)
     }
 }

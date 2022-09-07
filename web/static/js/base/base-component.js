@@ -19,10 +19,9 @@ export default class BaseComponent extends BaseListener {
     }
 
     constructor(element) {
-        if (!element) throw 'InvalidParameter: null element'
         super()
 
-        this.holder = element
+        this.holder = element ?? null
     }
 
     get holder() {

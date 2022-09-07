@@ -5,6 +5,65 @@
 
 let mainModule
 
+const FS_CHART_SETTINGS = {
+    legend: 'Chart Settings',
+}
+
+const FS_DATA_INPUT = {
+    legend: 'Data Input',
+    children: {
+        type: {
+            legend: 'Type',
+            group: 'data-input-type',
+            useFieldset: false,
+            inputs: [
+                {
+                    id: 'di-type-file',
+                    label: 'CSV File',
+                    checked: true,
+                },
+                {
+                    id: 'di-type-realtime',
+                    label: 'Realtime',
+                    checked: false,
+                },
+            ],
+        },
+        file: {
+            id: 'di-file',
+            label: 'File',
+            accept: '.csv',
+        },
+    },
+}
+
+const RF_TYPE = {
+    legend: 'Type',
+    group: 'data-input-type',
+    useFieldset: false,
+    inputs: [
+        {
+            id: 'di-type-file',
+            label: 'CSV File',
+            checked: true,
+        },
+        {
+            id: 'di-type-realtime',
+            label: 'Realtime',
+            checked: false,
+        },
+    ],
+}
+
+const IF_FILE = {
+    label: 'File',
+    accept: '.csv',
+}
+
+const IT_CONNECTION = {
+    label: 'Connection',
+}
+
 const TEST_FIELDS = {
     fieldset: {
         legend: 'Test Fieldset',
@@ -15,7 +74,7 @@ const TEST_FIELDS = {
     },
     checkbox: {
         legend: 'City',
-        ckbName: 'cb-city',
+        group: 'cb-city',
         inputs: [
             {
                 id: 'huey',
@@ -33,6 +92,33 @@ const TEST_FIELDS = {
                 id: 'louie',
                 label: 'Louie',
                 value: 'louie',
+                checked: false,
+            },
+        ],
+    },
+    radio: {
+        legend: 'Main Feature',
+        group: 'feature',
+        useFieldset: false,
+        inputs: [
+            {
+                id: 'scales',
+                label: 'Scales',
+                checked: true,
+            },
+            {
+                id: 'horns',
+                label: 'Horns',
+                checked: false,
+            },
+            {
+                id: 'fangs',
+                label: 'Fangs',
+                checked: false,
+            },
+            {
+                id: 'wings',
+                label: 'Wings',
                 checked: false,
             },
         ],

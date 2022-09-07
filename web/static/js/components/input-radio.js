@@ -1,20 +1,19 @@
 /**
  * Created by RTT.
- * Author: teocci@yandex.com on 2022-9월-01
+ * Author: teocci@yandex.com on 2022-9월-07
  */
 import BaseInput from '../base/base-input.js'
 
-export default class InputCheckbox extends BaseInput {
-    static TAG = 'checkbox'
+export default class InputRadio extends BaseInput {
+    static TAG = 'radio'
 
     static DEFAULT_OPTIONS = {
-        type: InputCheckbox.TAG,
+        type: InputRadio.TAG,
         id: undefined,
         label: undefined,
         name: undefined,
         value: undefined,
         checked: false,
-        indeterminate: undefined,
     }
 
     constructor(element, options) {
@@ -27,6 +26,5 @@ export default class InputCheckbox extends BaseInput {
         const options = this.options
         const input = this.input
         if (!isNull(options.checked)) input.checked = options.checked
-        if (!isNull(options.indeterminate)) input.indeterminate = options.indeterminate
     }
 }

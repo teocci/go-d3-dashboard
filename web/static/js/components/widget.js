@@ -5,9 +5,10 @@
 import BaseComponent from '../base/base-component.js'
 import Modal from './modal.js'
 import Fieldset from './fieldset.js'
+import BaseForm from '../base/base-form.js'
+import FieldsetRadio from './fieldset-radio.js'
+import InputFile from './input-file.js'
 import InputText from './input-text.js'
-import InputCheckbox from './input-checkbox.js'
-import FieldCheckbox from './field-checkbox.js'
 
 export default class Widget extends BaseComponent {
     constructor(element) {
@@ -34,11 +35,36 @@ export default class Widget extends BaseComponent {
 
     onAddWidgetClick(e) {
         this.modal = new Modal(this.dom)
-        const modalBody = this.modal.body
-        const fs = new Fieldset(modalBody, TEST_FIELDS.fieldset)
-        const it = new InputText(modalBody, TEST_FIELDS.text)
-        const cbGroup = new FieldCheckbox(modalBody, TEST_FIELDS.checkbox)
-        fs.addField(it.dom, cbGroup.dom)
+        const content = this.modal.content
+
+        const form = new BaseForm(content)
+        const formContent = form.content
+        const fs = new Fieldset(formContent, FS_CHART_SETTINGS)
+        const dataInput = new Fieldset(fs.content, FS_DATA_INPUT)
+        const type = new FieldsetRadio(dataInput.content, RF_TYPE)
+        const file = new InputFile(dataInput.content, IF_FILE)
+        const connect = new InputText(dataInput.content, IT_CONNECTION)
+        file.show()
+        connect.hide()
+
+        type.fields.forEach(field => {
+            field.input.onchange = e => {
+                const type = e.target.id
+                switch (type) {
+                    case 'di-type-file':
+                        file.show()
+                        connect.hide()
+                        break
+                    case 'di-type-realtime':
+                        file.hide()
+                        connect.show()
+                        break
+                }
+            }
+        })
+
+        file.input.onchange = e => { console.log(`${e.target.id} -> onchange`) }
+
         this.modal.show()
     }
 }
