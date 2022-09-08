@@ -58,9 +58,13 @@ const RF_TYPE = {
 const IF_FILE = {
     label: 'File',
     accept: '.csv',
+    mimeTypes: [
+        'text/csv',
+    ]
 }
 
 const IT_CONNECTION = {
+    id: 'di-connection',
     label: 'Connection',
 }
 

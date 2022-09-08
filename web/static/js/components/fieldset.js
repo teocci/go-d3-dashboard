@@ -69,7 +69,8 @@ export default class Fieldset extends BaseField {
         if (fields.length === 0) throw Error('Invalid fields : empty fields')
 
         fields.forEach((field, idx) => {
-            this.fields.set(`${group}-${idx}`, field)
+            const id = field.id ?? `${group}-${idx}`
+            this.fields.set(id, field)
             this.content.appendChild(field)
         })
     }

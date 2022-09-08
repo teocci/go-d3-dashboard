@@ -6,7 +6,7 @@ import BaseComponent from './base-component.js'
 
 export default class BaseField extends BaseComponent {
     constructor(element, options) {
-        super(element, options)
+        super(element)
 
         const oldOptions = this.defaultOptions
         this.options = Object.assign(oldOptions, options)

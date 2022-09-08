@@ -23,11 +23,13 @@ export default class FieldsetCheckbox extends Fieldset {
 
     initElement() {
         const content = this.content
-        const options = this.options
-        if (!isNull(options.inputs) && options.inputs.length > 0) {
-            options.inputs.forEach(inputOptions => {
-                new InputCheckbox(content, inputOptions)
-                this.fields.set(`${group}-${idx}`, fields)
+        const inputs = this.options.inputs
+        const group = this.options.group
+        if (!isNull(inputs) && inputs.length > 0) {
+            inputs.forEach((input, idx) => {
+                const field = new InputCheckbox(content, input)
+                const id = input.id ?? `${group}-${idx}`
+                this.fields.set(id, field)
             })
         }
     }

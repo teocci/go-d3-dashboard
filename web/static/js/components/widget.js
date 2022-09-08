@@ -44,26 +44,29 @@ export default class Widget extends BaseComponent {
         const type = new FieldsetRadio(dataInput.content, RF_TYPE)
         const file = new InputFile(dataInput.content, IF_FILE)
         const connect = new InputText(dataInput.content, IT_CONNECTION)
-        file.show()
-        connect.hide()
+        const showChecked = type => {
+            file.hide()
+            connect.hide()
+            switch (type) {
+                case 'di-type-file':
+                    file.show()
+                    break
+                case 'di-type-realtime':
+                    connect.show()
+                    break
+            }
+
+        }
 
         type.fields.forEach(field => {
             field.input.onchange = e => {
                 const type = e.target.id
-                switch (type) {
-                    case 'di-type-file':
-                        file.show()
-                        connect.hide()
-                        break
-                    case 'di-type-realtime':
-                        file.hide()
-                        connect.show()
-                        break
-                }
+                showChecked(type)
             }
         })
+        showChecked(type.inputChecked.input.id)
 
-        file.input.onchange = e => { console.log(`${e.target.id} -> onchange`) }
+        // file.input.onchange = e => { console.log(`${e.target.id} -> onchange`) }
 
         this.modal.show()
     }

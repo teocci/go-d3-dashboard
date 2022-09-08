@@ -28,8 +28,17 @@ export default class FieldsetRadio extends Fieldset {
         if (!isNull(inputs) && inputs.length > 0) {
             inputs.forEach((input, idx) => {
                 const field = new InputRadio(content, input)
-                this.fields.set(`${group}-${idx}`, field)
+                const id = input.id ?? `${group}-${idx}`
+                this.fields.set(id, field)
             })
         }
+    }
+
+    get inputChecked() {
+        for (const field of this.fields.values()) {
+            if (field.input.checked) return field
+        }
+
+        return null
     }
 }
