@@ -11,30 +11,10 @@ const FS_CHART_SETTINGS = {
 
 const FS_DATA_INPUT = {
     legend: 'Data Input',
-    children: {
-        type: {
-            legend: 'Type',
-            group: 'data-input-type',
-            useFieldset: false,
-            inputs: [
-                {
-                    id: 'di-type-file',
-                    label: 'CSV File',
-                    checked: true,
-                },
-                {
-                    id: 'di-type-realtime',
-                    label: 'Realtime',
-                    checked: false,
-                },
-            ],
-        },
-        file: {
-            id: 'di-file',
-            label: 'File',
-            accept: '.csv',
-        },
-    },
+}
+
+const FS_CHART = {
+    legend: 'Chart',
 }
 
 const RF_TYPE = {
@@ -66,6 +46,40 @@ const IF_FILE = {
 const IT_CONNECTION = {
     id: 'di-connection',
     label: 'Connection',
+}
+
+const S_CHART_TYPE = {
+    id: 'chart-type',
+    legend: 'Type',
+    items: [
+        {
+            label: 'Line Chart',
+            value: 'line',
+            selected: true,
+        },
+        {
+            label: 'Bar Chart',
+            value: 'bar',
+        },
+        {
+            label: 'Bubble Chart',
+            value: 'bubble',
+        },
+        {
+            label: 'Scatter Chart',
+            value: 'scatter',
+        },
+        {
+            label: 'Contour Chart',
+            value: 'contour',
+        },
+    ],
+}
+
+const IT_CHART_TYPE = {
+    id: 'chart-title',
+    label: 'Title',
+    placeholder: 'Insert a Chart Title'
 }
 
 const TEST_FIELDS = {
@@ -164,3 +178,29 @@ const BASE_FORM = {
         ],
     },
 }
+
+
+// children: {
+//     type: {
+//         legend: 'Type',
+//             group: 'data-input-type',
+//             useFieldset: false,
+//             inputs: [
+//             {
+//                 id: 'di-type-file',
+//                 label: 'CSV File',
+//                 checked: true,
+//             },
+//             {
+//                 id: 'di-type-realtime',
+//                 label: 'Realtime',
+//                 checked: false,
+//             },
+//         ],
+//     },
+//     file: {
+//         id: 'di-file',
+//             label: 'File',
+//             accept: '.csv',
+//     },
+// },

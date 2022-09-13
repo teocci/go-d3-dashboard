@@ -9,6 +9,7 @@ import BaseForm from '../base/base-form.js'
 import FieldsetRadio from './fieldset-radio.js'
 import InputFile from './input-file.js'
 import InputText from './input-text.js'
+import Select from './select.js'
 
 export default class Widget extends BaseComponent {
     constructor(element) {
@@ -65,6 +66,19 @@ export default class Widget extends BaseComponent {
             }
         })
         showChecked(type.inputChecked.input.id)
+
+        const chartFS = new Fieldset(fs.content, FS_CHART)
+        const chartContent = chartFS.content
+        const chartType = new Select(chartContent, S_CHART_TYPE)
+        const chartTitle = new InputText(chartContent, IT_CHART_TYPE)
+
+        const dsFS = new Fieldset(fs.content, FS_CHART)
+        const ds = dsFS.content
+        chartType.input.onchange = e => {
+            console.log(`${e.target.id} -> onchange`)
+            ds.textContent = e.target.value
+        }
+
 
         // file.input.onchange = e => { console.log(`${e.target.id} -> onchange`) }
 
