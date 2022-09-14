@@ -11,6 +11,7 @@ export default class BaseInput extends BaseComponent {
         name: undefined,
         value: undefined,
         required: undefined,
+        labelFirst: true,
     }
 
     constructor(element, options) {
@@ -46,7 +47,8 @@ export default class BaseInput extends BaseComponent {
         if (!isNull(options.value)) input.value = options.value
         if (!isNull(options.required)) input.required = options.required
 
-        field.append(label, input)
+        if (options.labelFirst) field.append(label, input)
+        else field.append(input, label)
 
         this.label = label
         this.input = input

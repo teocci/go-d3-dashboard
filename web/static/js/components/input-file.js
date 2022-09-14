@@ -18,6 +18,7 @@ export default class InputFile extends BaseInput {
         capture: undefined,
         multiple: undefined,
         mimeTypes: undefined,
+        labelFirst: true,
     }
 
     constructor(element, options) {
@@ -53,7 +54,9 @@ export default class InputFile extends BaseInput {
         const reader = new FileReader()
         reader.onload = () => {
             const dataUrl = reader.result
-            this.loadData(dataUrl).then(d => console.log(d))
+            this.loadData(dataUrl).then(d => {
+                this.onload(d)
+            })
         }
         reader.readAsDataURL(file)
     }
@@ -68,12 +71,8 @@ export default class InputFile extends BaseInput {
     }
 
     returnFileSize(n) {
-        if (n < 1024) {
-            return n + 'bytes'
-        } else if (n > 1024 && n < 1048576) {
-            return (n / 1024).toFixed(1) + 'KB'
-        } else if (n > 1048576) {
-            return (n / 1048576).toFixed(1) + 'MB'
-        }
+        if (n < 1024) return `${n}bytes`
+        else if (n > 1024 && n < 1048576) return `${(n / 1024).toFixed(1)}KB`
+        else if (n > 1048576) return `${(n / 1048576).toFixed(1)}MB`
     }
 }

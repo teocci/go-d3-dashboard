@@ -17,6 +17,7 @@ export default class InputText extends BaseInput {
         minLength: undefined,
         maxLength: undefined,
         size: undefined,
+        labelFirst: true,
     }
 
     constructor(element, options) {

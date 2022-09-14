@@ -27,8 +27,9 @@ export default class Select extends BaseComponent {
     constructor(element, options) {
         super(element)
 
-        this.options = Object.assign(this.constructor.DEFAULT_OPTIONS, options)
+        this.items = new Map()
 
+        this.options = Object.assign(this.constructor.DEFAULT_OPTIONS, options)
         if (this.options && !isNull(this.options.items) && this.options.items.length > 0) {
             const items = []
             for (const raw of this.options.items) {
@@ -38,7 +39,6 @@ export default class Select extends BaseComponent {
             }
             this.options.items = [...items]
         }
-        console.log({options: this.options})
 
         this.initElement()
     }
@@ -61,11 +61,11 @@ export default class Select extends BaseComponent {
         if (!isNull(options.multiple)) select.multiple = options.multiple
         if (!isNull(options.size)) select.size = options.size
 
-        options.items.forEach(item => {
-            const option = document.createElement('option')
-            if (!isNull(item.value)) option.value = item.value
-            if (!isNull(item.label)) option.textContent = item.label
-            if (!isNull(item.selected)) option.selected = item.selected
+        options.items.forEach((item, idx) => {
+            const option = this.createOption(item)
+
+            const id = option.value ?? `${options.name}-${idx}`
+            this.items.set(id, option)
 
             select.appendChild(option)
         })
@@ -77,5 +77,40 @@ export default class Select extends BaseComponent {
 
         this.dom = field
         this.holder.append(field)
+    }
+
+    get selected() {
+        for (const item of this.items.values()) if (item.selected) return item
+
+        return null
+    }
+
+    createOption(item) {
+        const option = document.createElement('option')
+        if (!isNull(item.value)) option.value = item.value
+        if (!isNull(item.label)) option.textContent = item.label
+        if (!isNull(item.selected)) option.selected = item.selected
+
+        return option
+    }
+
+    addItems(...values) {
+        const name = this.options.name
+        if (isNull(values)) throw Error('Invalid Parameter: null values')
+        if (values.length === 0) throw Error('Invalid Parameter: empty values')
+
+        values.forEach((value, idx) => {
+            const item = {
+                value: toKebabCase(value),
+                label: toPascalCase(value),
+                selected: idx === 0 ?? undefined,
+            }
+            const option = this.createOption(item)
+
+            const id = value ?? `${name}-${idx}`
+            this.items.set(id, option)
+
+            this.input.appendChild(option)
+        })
     }
 }

@@ -34,7 +34,7 @@ export default class FieldsetRadio extends Fieldset {
         }
     }
 
-    get inputChecked() {
+    get checked() {
         for (const field of this.fields.values()) {
             if (field.input.checked) return field
         }

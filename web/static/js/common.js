@@ -13,6 +13,22 @@ const serialize = o => JSON.stringify(o)
 
 const unserialize = s => JSON.parse(s)
 
+const REGEX_SNAKE_CASE = /[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g
+const REGEX_CAMEL_CASE = /[^a-zA-Z0-9]+(.)/g
+const REGEX_PASCAL_CASE = /\w\S*/g
+
+const trimSpaces = s => s && s.replace(/\s+/g, ' ').trim()
+const toSnakeCase = s => s && trimSpaces(s).match(REGEX_SNAKE_CASE)
+    .map(x => x.toLowerCase())
+    .join('_')
+const toKebabCase = s => s && trimSpaces(s).match(REGEX_SNAKE_CASE)
+    .map(x => x.toLowerCase())
+    .join('-')
+const toCamelCase = s => s && toSnakeCase(s).toLowerCase()
+    .replace(REGEX_CAMEL_CASE, (m, chr) => chr.toUpperCase())
+const toPascalCase = s => s && trimSpaces(s).toLowerCase()
+    .replace(REGEX_PASCAL_CASE, m => `${m.charAt(0).toUpperCase()}${m.substring(1).toLowerCase()}`)
+
 const simpleMerge = (...objects) => objects.reduce((p, o) => ({...p, ...o}), {})
 
 const rand = (min, max) => Math.random() * (max - min) + min

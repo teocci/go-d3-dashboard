@@ -40,11 +40,21 @@ export default class Widget extends BaseComponent {
 
         const form = new BaseForm(content)
         const formContent = form.content
-        const fs = new Fieldset(formContent, FS_CHART_SETTINGS)
-        const dataInput = new Fieldset(fs.content, FS_DATA_INPUT)
-        const type = new FieldsetRadio(dataInput.content, RF_TYPE)
+        const csFS = new Fieldset(formContent, FS_CHART_SETTINGS)
+        const cs = csFS.content
+        const dataInput = new Fieldset(cs, FS_DATA_INPUT)
+        const type = new FieldsetRadio(dataInput.content, RF_DATA_INPUT_TYPE)
         const file = new InputFile(dataInput.content, IF_FILE)
         const connect = new InputText(dataInput.content, IT_CONNECTION)
+
+        const chartFS = new Fieldset(cs, FS_CHART)
+        const chart = chartFS.content
+        const chartType = new Select(chart, S_CHART_TYPE)
+        const chartTitle = new InputText(chart, IT_CHART_TYPE)
+
+        const dsFS = new Fieldset(cs, FS_DATA_SOURCE)
+        const ds = dsFS.content
+
         const showChecked = type => {
             file.hide()
             connect.hide()
@@ -56,8 +66,38 @@ export default class Widget extends BaseComponent {
                     connect.show()
                     break
             }
-
         }
+
+        const xaFS = new Fieldset(ds, FS_X_AXIS)
+        const xa = xaFS.content
+        const xaLabel = new InputText(xa, IT_X_AXIS_LABEL)
+        const xaUnit = new InputText(xa, IT_X_AXIS_UNIT)
+        const xaColumn = new Select(xa, S_X_AXIS_COLUMN)
+        const xaScaleType = new FieldsetRadio(xa, RF_X_AXIS_SCALE_TYPE)
+
+        const showChartSelected = type => {
+            switch (type) {
+                case 'line':
+
+
+                    break
+                case 'bar':
+                    break
+                case 'bubble':
+                    break
+                case 'scatter':
+                    break
+                case 'contour':
+                    break
+            }
+            // ds.textContent = type
+        }
+
+        showChecked(type.checked.input.id)
+
+        chartFS.hide()
+        showChartSelected(chartType.selected.value)
+        dsFS.hide()
 
         type.fields.forEach(field => {
             field.input.onchange = e => {
@@ -65,20 +105,18 @@ export default class Widget extends BaseComponent {
                 showChecked(type)
             }
         })
-        showChecked(type.inputChecked.input.id)
 
-        const chartFS = new Fieldset(fs.content, FS_CHART)
-        const chartContent = chartFS.content
-        const chartType = new Select(chartContent, S_CHART_TYPE)
-        const chartTitle = new InputText(chartContent, IT_CHART_TYPE)
-
-        const dsFS = new Fieldset(fs.content, FS_CHART)
-        const ds = dsFS.content
         chartType.input.onchange = e => {
-            console.log(`${e.target.id} -> onchange`)
-            ds.textContent = e.target.value
+            const type = e.target.value
+            showChartSelected(type)
         }
 
+        file.onload = d => {
+            console.log(d)
+            chartFS.show()
+            dsFS.show()
+            xaColumn.addItems(...d.columns)
+        }
 
         // file.input.onchange = e => { console.log(`${e.target.id} -> onchange`) }
 

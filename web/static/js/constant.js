@@ -17,9 +17,9 @@ const FS_CHART = {
     legend: 'Chart',
 }
 
-const RF_TYPE = {
+const RF_DATA_INPUT_TYPE = {
     legend: 'Type',
-    group: 'data-input-type',
+    group: 'di-type',
     useFieldset: false,
     inputs: [
         {
@@ -36,6 +36,7 @@ const RF_TYPE = {
 }
 
 const IF_FILE = {
+    id: 'di-file',
     label: 'File',
     accept: '.csv',
     mimeTypes: [
@@ -80,6 +81,54 @@ const IT_CHART_TYPE = {
     id: 'chart-title',
     label: 'Title',
     placeholder: 'Insert a Chart Title'
+}
+
+const FS_DATA_SOURCE = {
+    legend: 'Data Source',
+}
+
+const FS_X_AXIS = {
+    legend: 'X-Axis',
+}
+
+const IT_X_AXIS_LABEL = {
+    id: 'xa-label',
+    label: 'Label',
+    placeholder: 'Insert x-axis label'
+}
+
+const IT_X_AXIS_UNIT = {
+    id: 'xa-unit',
+    label: 'Unit',
+}
+
+const S_X_AXIS_COLUMN = {
+    id: 'xa-column',
+    legend: 'Column',
+    items: [],
+}
+
+const RF_X_AXIS_SCALE_TYPE = {
+    legend: 'Scale Type',
+    group: 'xa-type',
+    useFieldset: false,
+    inputs: [
+        {
+            id: 'xa-scale-type-linear',
+            label: 'Linear',
+            checked: true,
+        },
+        {
+            id: 'xa-scale-type-time',
+            label: 'Time',
+            checked: false,
+        },
+        {
+            id: 'xa-scale-type-log',
+            label: 'Log',
+            checked: false,
+        },
+    ],
 }
 
 const TEST_FIELDS = {
