@@ -12,6 +12,7 @@ export default class Fieldset extends BaseField {
         legend: undefined,
         group: `${Fieldset.TAG}-group`,
         useFieldset: true,
+        showLegend: true,
     }
 
     constructor(element, options) {
@@ -25,7 +26,7 @@ export default class Fieldset extends BaseField {
     }
 
     get defaultOptions() {
-        return simpleMerge(Fieldset.DEFAULT_OPTIONS, this.constructor.DEFAULT_OPTIONS)
+        return  merger(true, Fieldset.DEFAULT_OPTIONS, this.constructor.DEFAULT_OPTIONS)
     }
 
     initField() {
@@ -39,7 +40,7 @@ export default class Fieldset extends BaseField {
 
         this.content = content
         this.dom = fieldset
-        this.holder.appendChild(fieldset)
+        if (!isNull(this.holder)) this.holder.appendChild(fieldset)
     }
 
     createElement(useFieldset) {

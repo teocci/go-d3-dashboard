@@ -15,6 +15,7 @@ export default class InputRadio extends BaseInput {
         value: undefined,
         checked: false,
         labelFirst: false,
+        showLabel: true,
     }
 
     constructor(element, options) {

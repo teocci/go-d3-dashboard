@@ -16,6 +16,7 @@ export default class InputCheckbox extends BaseInput {
         checked: false,
         indeterminate: undefined,
         labelFirst: false,
+        showLabel: true,
     }
 
     constructor(element, options) {

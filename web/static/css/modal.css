@@ -75,3 +75,8 @@
 .modal-wrapper .modal-content {
     max-height: calc(var(--modal-height) - 65px);
 }
+
+.series .actions {
+    display: flex;
+    flex-flow: row nowrap;
+}

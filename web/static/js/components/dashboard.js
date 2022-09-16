@@ -27,7 +27,7 @@ export default class Dashboard extends BaseComponent {
         dashboard.appendChild(widget.dom)
 
         this.dom = dashboard
-        this.holder.appendChild(dashboard)
+        if (!isNull(this.holder)) this.holder.appendChild(dashboard)
     }
 
     initListeners() {

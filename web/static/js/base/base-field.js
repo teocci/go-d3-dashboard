@@ -9,7 +9,7 @@ export default class BaseField extends BaseComponent {
         super(element)
 
         const oldOptions = this.defaultOptions
-        this.options = Object.assign(oldOptions, options)
+        this.options = merger(true, oldOptions, options)
 
         if (this.options && !isNull(this.options.inputs) && this.options.inputs.length > 0) {
             const inputs = []
@@ -25,6 +25,6 @@ export default class BaseField extends BaseComponent {
     }
 
     get defaultOptions() {
-        return Object.assign(null, this.constructor.DEFAULT_OPTIONS)
+        return cloner(this.constructor.DEFAULT_OPTIONS)
     }
 }

@@ -13,6 +13,8 @@ export default class FieldsetRadio extends Fieldset {
         legend: undefined,
         group: `${FieldsetRadio.TAG}-group`,
         inputs: [],
+        useFieldset: true,
+        showLegend: true,
     }
 
     constructor(element, options) {

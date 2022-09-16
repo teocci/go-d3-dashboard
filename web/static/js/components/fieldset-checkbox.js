@@ -13,6 +13,8 @@ export default class FieldsetCheckbox extends Fieldset {
         legend: undefined,
         group: `${FieldsetCheckbox.TAG}-group`,
         inputs: [],
+        useFieldset: true,
+        showLegend: true,
     }
 
     constructor(element, options) {

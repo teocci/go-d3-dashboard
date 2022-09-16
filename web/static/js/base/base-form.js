@@ -38,9 +38,12 @@ export default class BaseForm extends BaseComponent {
         footer.append(submitBtn, cancelBtn)
         form.append(content, footer)
 
+
+        this.submitBtn = submitBtn
+        this.cancelBtn = cancelBtn
         this.content = content
         this.dom = form
-        this.holder.appendChild(form)
+        if (!isNull(this.holder)) this.holder.append(form)
     }
 
     createField(options) {

@@ -10,6 +10,7 @@ import FieldsetRadio from './fieldset-radio.js'
 import InputFile from './input-file.js'
 import InputText from './input-text.js'
 import Select from './select.js'
+import Series from './series.js'
 
 export default class Widget extends BaseComponent {
     constructor(element) {
@@ -35,8 +36,8 @@ export default class Widget extends BaseComponent {
     }
 
     onAddWidgetClick(e) {
-        this.modal = new Modal(this.dom)
-        const content = this.modal.content
+        const modal = new Modal(this.dom)
+        const content = modal.content
 
         const form = new BaseForm(content)
         const formContent = form.content
@@ -53,32 +54,38 @@ export default class Widget extends BaseComponent {
         const chartTitle = new InputText(chart, IT_CHART_TYPE)
 
         const dsFS = new Fieldset(cs, FS_DATA_SOURCE)
-        const ds = dsFS.content
+        const dataSource = dsFS.content
+
+        const xaFS = new Fieldset(dataSource, FS_X_AXIS)
+        const xAxis = xaFS.content
+        const xaLabel = new InputText(xAxis, IT_X_AXIS_LABEL)
+        const xaUnit = new InputText(xAxis, IT_X_AXIS_UNIT)
+        const xaColumn = new Select(xAxis, S_X_AXIS_COLUMN)
+        const xaScaleType = new FieldsetRadio(xAxis, RF_X_AXIS_SCALE_TYPE)
+
+        const seriesFS = new Fieldset(dataSource, FS_SERIES)
+        const series = seriesFS.content
+        const table = new Series(series)
 
         const showChecked = type => {
             file.hide()
             connect.hide()
+            chartType.reset()
             switch (type) {
                 case 'di-type-file':
                     file.show()
+                    chartType.enable()
                     break
                 case 'di-type-realtime':
                     connect.show()
+                    chartType.disable()
                     break
             }
         }
 
-        const xaFS = new Fieldset(ds, FS_X_AXIS)
-        const xa = xaFS.content
-        const xaLabel = new InputText(xa, IT_X_AXIS_LABEL)
-        const xaUnit = new InputText(xa, IT_X_AXIS_UNIT)
-        const xaColumn = new Select(xa, S_X_AXIS_COLUMN)
-        const xaScaleType = new FieldsetRadio(xa, RF_X_AXIS_SCALE_TYPE)
-
         const showChartSelected = type => {
             switch (type) {
                 case 'line':
-
 
                     break
                 case 'bar':
@@ -99,6 +106,11 @@ export default class Widget extends BaseComponent {
         showChartSelected(chartType.selected.value)
         dsFS.hide()
 
+        form.cancelBtn.onclick = e => {
+            e.preventDefault()
+            modal.close(e)
+        }
+
         type.fields.forEach(field => {
             field.input.onchange = e => {
                 const type = e.target.id
@@ -112,14 +124,15 @@ export default class Widget extends BaseComponent {
         }
 
         file.onload = d => {
-            console.log(d)
+            console.log(d.columns, `type ${typeof d.columns}`)
             chartFS.show()
             dsFS.show()
             xaColumn.addItems(...d.columns)
+            table.updateColumnValues(d.columns)
         }
 
         // file.input.onchange = e => { console.log(`${e.target.id} -> onchange`) }
-
+        this.modal = modal
         this.modal.show()
     }
 }

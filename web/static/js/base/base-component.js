@@ -40,6 +40,10 @@ export default class BaseComponent extends BaseListener {
         this.element = element
     }
 
+    get tag () {
+        return this.constructor.TAG
+    }
+
     toggle(val) {
         const element = this.dom
         element.classList.toggle('hidden', val)
@@ -53,10 +57,6 @@ export default class BaseComponent extends BaseListener {
     hide() {
         const element = this.dom
         element.classList.add('hidden')
-    }
-
-    get tag () {
-        return this.constructor.TAG
     }
 
     destroyChildren(element) {

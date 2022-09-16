@@ -19,6 +19,7 @@ export default class InputFile extends BaseInput {
         multiple: undefined,
         mimeTypes: undefined,
         labelFirst: true,
+        showLabel: true,
     }
 
     constructor(element, options) {
@@ -30,6 +31,7 @@ export default class InputFile extends BaseInput {
 
     initElement() {
         const options = this.options
+        console.log({'file-options': options})
 
         const input = this.input
         input.requiered = options.requiered
@@ -66,6 +68,7 @@ export default class InputFile extends BaseInput {
     }
 
     validFileType(file) {
+        console.log({'file-options': this.options})
         const mimeTypes = this.options.mimeTypes
         return mimeTypes && mimeTypes.includes(file.type)
     }

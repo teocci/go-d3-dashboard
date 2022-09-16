@@ -4,20 +4,21 @@
  */
 import BaseInput from '../base/base-input.js'
 
-export default class InputText extends BaseInput {
-    static TAG = 'text'
+export default class InputNumber extends BaseInput {
+    static TAG = 'number'
 
     static DEFAULT_OPTIONS = {
-        type: InputText.TAG,
-        id: InputText.TAG,
-        values: undefined,
+        type: InputNumber.TAG,
+        id: InputNumber.TAG,
         label: undefined,
         name: undefined,
         required: undefined,
         placeholder: undefined,
-        minLength: undefined,
-        maxLength: undefined,
+        step: undefined,
+        min: undefined,
+        max: undefined,
         size: undefined,
+        list: undefined,
         labelFirst: true,
         showLabel: true,
     }
@@ -34,8 +35,10 @@ export default class InputText extends BaseInput {
         const input = this.input
         input.requiered = options.requiered
         if (options.placeholder) input.placeholder = options.placeholder
-        if (options.minLength) input.minLength = options.minLength
-        if (options.maxLength) input.maxLength = options.maxLength
+        if (options.step) input.step = options.step
+        if (options.min) input.min = options.min
+        if (options.max) input.max = options.max
         if (options.size) input.size = options.size
+        if (options.list) input.list = options.list
     }
 }

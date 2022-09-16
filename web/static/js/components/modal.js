@@ -12,6 +12,7 @@ export default class Modal extends Draggable {
 
         this.header = null
         this.content = null
+        this.outsideTrigger = false
 
         this.createPanel()
         this.registerDraggable(this.header)
@@ -47,7 +48,9 @@ export default class Modal extends Draggable {
 
         const trigger = document.createElement('div')
         trigger.classList.add('modal-outside')
-        trigger.onclick = e => this.close(e)
+        trigger.onclick = e => {
+            if (this.outsideTrigger) this.close(e)
+        }
 
         this.header = header
         this.content = content
@@ -58,7 +61,7 @@ export default class Modal extends Draggable {
         section.append(header, content)
         modal.appendChild(section)
         this.dom = modal
-        this.holder.append(modal, trigger)
+        if (!isNull(this.holder)) this.holder.append(modal, trigger)
     }
 
     close(e) {

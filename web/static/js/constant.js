@@ -131,6 +131,11 @@ const RF_X_AXIS_SCALE_TYPE = {
     ],
 }
 
+const FS_SERIES = {
+    legend: 'Series',
+}
+
+
 const TEST_FIELDS = {
     fieldset: {
         legend: 'Test Fieldset',

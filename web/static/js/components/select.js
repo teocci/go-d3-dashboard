@@ -21,6 +21,7 @@ export default class Select extends BaseComponent {
         required: undefined,
         multiple: undefined,
         size: undefined,
+        showLabel: true,
         items: [],
     }
 
@@ -29,7 +30,7 @@ export default class Select extends BaseComponent {
 
         this.items = new Map()
 
-        this.options = Object.assign(this.constructor.DEFAULT_OPTIONS, options)
+        this.options =  merger(true, this.constructor.DEFAULT_OPTIONS, options)
         if (this.options && !isNull(this.options.items) && this.options.items.length > 0) {
             const items = []
             for (const raw of this.options.items) {
@@ -43,6 +44,12 @@ export default class Select extends BaseComponent {
         this.initElement()
     }
 
+    get selected() {
+        for (const item of this.items.values()) if (item.selected) return item
+
+        return null
+    }
+
     initElement() {
         const options = this.options
 
@@ -52,6 +59,7 @@ export default class Select extends BaseComponent {
         const label = document.createElement('label')
         if (!isNull(options.id)) label.htmlFor = options.id
         if (!isNull(options.legend)) label.textContent = options.legend
+        if (!options.showLabel) label.classList.add('hidden')
 
         const select = document.createElement('select')
         if (!isNull(options.id)) select.id = options.id
@@ -76,13 +84,7 @@ export default class Select extends BaseComponent {
         this.input = select
 
         this.dom = field
-        this.holder.append(field)
-    }
-
-    get selected() {
-        for (const item of this.items.values()) if (item.selected) return item
-
-        return null
+        if (!isNull(this.holder)) this.holder.append(field)
     }
 
     createOption(item) {
@@ -112,5 +114,22 @@ export default class Select extends BaseComponent {
 
             this.input.appendChild(option)
         })
+    }
+
+    enable() {
+        this.input.disabled = false
+    }
+
+    disable() {
+        this.input.disabled = true
+    }
+
+    reset() {
+        this.input.selectedIndex = null
+    }
+
+    destroy() {
+        this.items = new Map()
+        this.destroyChildren(this.input)
     }
 }
