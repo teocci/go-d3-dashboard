@@ -25,7 +25,7 @@ export default class BaseForm extends BaseComponent {
         content.classList.add('form-content')
 
         const footer = document.createElement('div')
-        footer.classList.add('form-btns')
+        footer.classList.add('form-footer')
 
         const submitBtn = document.createElement('button')
         submitBtn.textContent = '전송'

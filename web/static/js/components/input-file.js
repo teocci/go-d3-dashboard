@@ -12,6 +12,7 @@ export default class InputFile extends BaseInput {
         type: InputFile.TAG,
         id: InputFile.TAG,
         label: undefined,
+        text: undefined,
         name: undefined,
         required: undefined,
         accept: undefined,
@@ -31,9 +32,24 @@ export default class InputFile extends BaseInput {
 
     initElement() {
         const options = this.options
-        console.log({'file-options': options})
+
+        const btn = document.createElement('label')
+        if (!isNull(options.id)) btn.htmlFor = options.id
+        btn.classList.add(`${this.tag}-btn`)
+
+        const span = document.createElement('span')
+        if (!isNull(options.id)) span.textContent = options.text ?? 'Select File'
+
+        btn.appendChild(span)
+
+        const fileInfo = document.createElement('div')
+        fileInfo.classList.add('file-info')
+
+        this.dom.append(btn, fileInfo)
+        this.fileInfo = fileInfo
 
         const input = this.input
+        input.classList.add('hidden')
         input.requiered = options.requiered
         if (options.accept) input.accept = options.accept
         if (options.capture) input.capture = options.capture
@@ -47,16 +63,19 @@ export default class InputFile extends BaseInput {
 
     loadFile(e) {
         const input = this.input
+        const fileInfo = this.fileInfo
         const files = input.files
 
         if (files.length === 0) throw new Error('No files currently selected for load')
         const file = files[0]
         if (!this.validFileType(file)) throw new Error(`File [${file.name}] is not a valid file type. Update your selection.`)
-        console.log(`File: [${file.name}], file size ${this.returnFileSize(file.size)}.`)
+        const info = `[${file.name} | ${this.returnFileSize(file.size)}]`
+        console.log(info)
         const reader = new FileReader()
         reader.onload = () => {
             const dataUrl = reader.result
             this.loadData(dataUrl).then(d => {
+                fileInfo.textContent = info
                 this.onload(d)
             })
         }

@@ -136,6 +136,174 @@ const FS_SERIES = {
 }
 
 
+
+const DEFAULT_LINE_ATTRIBUTES = [
+    {
+        id: 'label',
+        label: '레이블',
+        type: 'text',
+        options: {},
+    },
+    {
+        id: 'unit',
+        label: '단위',
+        type: 'text',
+        options: {
+            maxLength: 5,
+            size: 5,
+        },
+    },
+    {
+        id: 'column',
+        label: '컬럼',
+        type: 'select',
+        options: {},
+    },
+    {
+        id: 'scale',
+        label: '스케일',
+        type: 'select',
+        options: {
+            items: [
+                {
+                    label: 'Linear',
+                    value: 'linear',
+                    selected: true,
+                },
+                {
+                    label: 'Time',
+                    value: 'time',
+                },
+                {
+                    label: 'Log',
+                    value: 'log',
+                },
+            ],
+        },
+    },
+    {
+        id: 'curve',
+        label: '커브 타입',
+        type: 'select',
+        options: {
+            items: [
+                {
+                    label: 'Linear',
+                    value: 'linear',
+                    selected: true,
+                },
+                {
+                    label: 'Smooth',
+                    value: 'smooth',
+                },
+                {
+                    label: 'Step',
+                    value: 'step',
+                },
+            ],
+        },
+    },
+    {
+        id: 'width',
+        label: '선 길이',
+        type: 'number',
+        options: {
+            value: 1,
+            step: .5,
+            min: '0',
+            max: 10,
+            size: 3,
+        },
+    },
+    {
+        id: 'opacity',
+        label: '투명도',
+        type: 'number',
+        options: {
+            value: 1,
+            step: .1,
+            min: '0',
+            max: 1,
+            size: 2,
+        },
+    },
+    {
+        id: 'color',
+        label: '색상',
+        type: 'color',
+        options: {},
+    },
+    {
+        id: 'actions',
+        label: '동작',
+        type: 'actions',
+        options: {},
+    },
+]
+
+const DEFAULT_BAR_ATTRIBUTES = [
+    {
+        id: 'label',
+        label: '레이블',
+        type: 'text',
+        options: {},
+    },
+    {
+        id: 'unit',
+        label: '단위',
+        type: 'text',
+        options: {
+            maxLength: 5,
+            size: 5,
+        },
+    },
+    {
+        id: 'column',
+        label: '컬럼',
+        type: 'select',
+        options: {},
+    },
+    {
+        id: 'width',
+        label: '선 길이',
+        type: 'number',
+        options: {
+            value: 1,
+            step: .5,
+            min: '0',
+            max: 10,
+            size: 3,
+        },
+    },
+    {
+        id: 'opacity',
+        label: '투명도',
+        type: 'number',
+        options: {
+            value: 1,
+            step: .1,
+            min: '0',
+            max: 1,
+            size: 2,
+        },
+    },
+    {
+        id: 'color',
+        label: '색상',
+        type: 'color',
+        options: {},
+    },
+    {
+        id: 'actions',
+        label: '동작',
+        type: 'actions',
+        options: {},
+    },
+]
+
+
+
+
 const TEST_FIELDS = {
     fieldset: {
         legend: 'Test Fieldset',
@@ -232,29 +400,3 @@ const BASE_FORM = {
         ],
     },
 }
-
-
-// children: {
-//     type: {
-//         legend: 'Type',
-//             group: 'data-input-type',
-//             useFieldset: false,
-//             inputs: [
-//             {
-//                 id: 'di-type-file',
-//                 label: 'CSV File',
-//                 checked: true,
-//             },
-//             {
-//                 id: 'di-type-realtime',
-//                 label: 'Realtime',
-//                 checked: false,
-//             },
-//         ],
-//     },
-//     file: {
-//         id: 'di-file',
-//             label: 'File',
-//             accept: '.csv',
-//     },
-// },

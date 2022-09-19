@@ -54,7 +54,7 @@
     display: flex;
     flex-flow: row nowrap;
     justify-content: space-between;
-    background: var(--main-accent-color);
+    background: var(--main-color);
     color: var(--font-light-color);
     line-height: 2rem;
 }
@@ -76,7 +76,132 @@
     max-height: calc(var(--modal-height) - 65px);
 }
 
+.field .label:not(.ender, .hidden)::after,
+.fieldset .label:not(.ender, .hidden)::after {
+    content: ':';
+    padding-left: .5rem;
+    padding-right: 1rem;
+}
+
+div.fieldset {
+    display: flex;
+    flex-flow: row nowrap;
+}
+
+div.fieldset .fieldset-content {
+    display: flex;
+    flex-flow: row nowrap;
+}
+
+.fieldset .fieldset-content > .field:not(:last-child, .hidden),
+.fieldset .fieldset-content > .inline:not(:last-child, .hidden) {
+    margin-bottom: .5rem;
+}
+
+.inline .fieldset-content > .field:not(:last-child) {
+    margin-bottom: 0;
+}
+
+fieldset legend {
+    font-size: 1rem;
+    font-weight: bold;
+    background: var(--bg-white);
+}
+
+.series table {
+    width: 100%;
+}
+
+.series th {
+    font-size: 1rem;
+    text-align: left;
+}
+
+.series td {
+    white-space: nowrap
+}
+
+.series td .field input:not([type='number']),
+.series td .field select {
+    width: 100%;
+}
+
+.field input[type='number'] {
+    max-width: 3rem;
+}
+
+.series td .field input[type='color'] {
+    width: 3rem;
+}
+.series td .field select {
+    min-width: 5rem;
+ }
+
 .series .actions {
     display: flex;
     flex-flow: row nowrap;
+    min-width: 8rem;
+    width: 100%;
+}
+
+.series .actions .action {
+    margin-right: .5rem;
+}
+
+.series .actions .action:has(.fa-square-plus) {
+    display: none;
+}
+
+.series tr:last-child .actions .action:has(.fa-square-plus) {
+    display: block;
+}
+
+.series tr:nth-child(n+10) .actions .action:has(.fa-square-plus) {
+    display: none;
+}
+
+.file-input {
+    display: flex;
+    flex-flow: row nowrap;
+    margin-bottom: 0 !important;
+}
+
+.file-input .file-info {
+    margin-left: .5rem;
+}
+
+.file-input input::file-selector-button {
+    visibility: hidden;
+}
+
+.file-input .file-btn {
+    background: var(--main-color);
+    color: var(--font-light-color);
+    border: 0;
+    border-radius: 3px;
+    font-size: .75rem;
+    font-weight: bold;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+    overflow: hidden;
+    padding: 0 .375rem;
+    margin: 1px 0 .375rem;
+    line-height: 1.5rem;
+    transition: ease 0.2s, background;
+    cursor: pointer;
+    user-select: none;
+}
+
+.file-input .file-btn:hover {
+    background: var(--main-contrast-color);
+}
+
+.file-input .file-btn i {
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+    fill: currentColor;
+    margin-top: -0.25em;
+    margin-right: 0.25em;
 }

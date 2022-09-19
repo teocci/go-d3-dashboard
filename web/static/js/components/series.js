@@ -12,110 +12,6 @@ import Actions from './actions.js'
 export default class Series extends BaseComponent {
     static TAG = 'series'
 
-    static DEFAULT_ATTRIBUTES = [
-        {
-            id: 'label',
-            label: 'Label',
-            type: 'text',
-            options: {},
-        },
-        {
-            id: 'unit',
-            label: 'Unit',
-            type: 'text',
-            options: {
-                maxLength: 5,
-                size: 5,
-            },
-        },
-        {
-            id: 'column',
-            label: 'Column',
-            type: 'select',
-            options: {},
-        },
-        {
-            id: 'scale',
-            label: 'Scale Type',
-            type: 'select',
-            options: {
-                items: [
-                    {
-                        label: 'Linear',
-                        value: 'linear',
-                        selected: true,
-                    },
-                    {
-                        label: 'Time',
-                        value: 'time',
-                    },
-                    {
-                        label: 'Log',
-                        value: 'log',
-                    },
-                ],
-            },
-        },
-        {
-            id: 'curve',
-            label: 'Curve Type',
-            type: 'select',
-            options: {
-                items: [
-                    {
-                        label: 'Linear',
-                        value: 'linear',
-                        selected: true,
-                    },
-                    {
-                        label: 'Smooth',
-                        value: 'smooth',
-                    },
-                    {
-                        label: 'Step',
-                        value: 'step',
-                    },
-                ],
-            },
-        },
-        {
-            id: 'width',
-            label: 'Line Width',
-            type: 'number',
-            options: {
-                value: 1,
-                step: .5,
-                min: '0',
-                max: 10,
-                size: 3,
-            },
-        },
-        {
-            id: 'opacity',
-            label: 'Opacity',
-            type: 'number',
-            options: {
-                value: 1,
-                step: .1,
-                min: '0',
-                max: 1,
-                size: 2,
-            },
-        },
-        {
-            id: 'color',
-            label: 'Color',
-            type: 'color',
-            options: {},
-        },
-        {
-            id: 'actions',
-            label: 'Actions',
-            type: 'actions',
-            options: {},
-        },
-    ]
-
     constructor(element) {
         super(element)
 
@@ -128,7 +24,7 @@ export default class Series extends BaseComponent {
     }
 
     initAttributes() {
-        const attributes = cloner(Series.DEFAULT_ATTRIBUTES)
+        const attributes = cloner(DEFAULT_LINE_ATTRIBUTES)
         for (const attribute of attributes) {
             this.attributes.set(attribute.id, attribute)
         }
@@ -262,9 +158,8 @@ export default class Series extends BaseComponent {
         this.addEmptyRow()
     }
 
-    reset() {
+    destroy() {
         this.series = new Map()
         this.destroyChildren(this.table)
-        this.createEmptyTable()
     }
 }

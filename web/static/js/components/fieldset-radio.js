@@ -36,6 +36,16 @@ export default class FieldsetRadio extends Fieldset {
         }
     }
 
+    set checked(id) {
+        for (const field of this.fields.values()) {
+            if (field.input.id === id) {
+                field.input.checked = true
+                const event = new Event('change')
+                field.input.dispatchEvent(event)
+            }
+        }
+    }
+
     get checked() {
         for (const field of this.fields.values()) {
             if (field.input.checked) return field

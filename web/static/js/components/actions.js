@@ -12,14 +12,14 @@ export default class Actions extends BaseComponent {
 
     static ACTIONS = [
         {
-            id: Actions.ACTION_ADD,
-            label: 'Add',
-            icon: 'fa-plus',
-        },
-        {
             id: Actions.ACTION_REMOVE,
             label: 'Remove',
-            icon: 'fa-minus',
+            icon: 'fa-square-minus',
+        },
+        {
+            id: Actions.ACTION_ADD,
+            label: 'Add',
+            icon: 'fa-square-plus',
         },
     ]
 

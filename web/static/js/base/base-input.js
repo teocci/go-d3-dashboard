@@ -30,13 +30,23 @@ export default class BaseInput extends BaseComponent {
         return merger(true, BaseInput.DEFAULT_INPUT_OPTIONS, this.constructor.DEFAULT_OPTIONS)
     }
 
+    set value(v) {
+        if (isNull(this.input)) throw new Error('InvalidAttribute: input is null')
+
+        const input = this.input
+        input.value = v
+        const event = new Event('change')
+        input.dispatchEvent(event)
+    }
+
     initInput() {
         const options = this.options
 
         const field = document.createElement('div')
-        field.classList.add('field')
+        field.classList.add('field', `${this.tag}-input`)
 
         const label = document.createElement('label')
+        label.classList.add('label')
         if (!isNull(options.id)) label.htmlFor = options.id
         if (!isNull(options.label)) label.textContent = options.label
         if (!options.showLabel) label.classList.add('hidden')
@@ -50,13 +60,16 @@ export default class BaseInput extends BaseComponent {
         if (!isNull(options.required)) input.required = options.required
 
         if (options.labelFirst) field.append(label, input)
-        else field.append(input, label)
+        else {
+            label.classList.add('ender')
+            field.append(input, label)
+        }
 
         this.label = label
         this.input = input
 
         this.dom = field
-        if (!isNull(this.holder)) this.holder.append(field)
+        if (!isNull(this.holder)) this.holder.appendChild(field)
     }
 
     enable() {

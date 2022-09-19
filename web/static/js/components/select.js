@@ -44,6 +44,15 @@ export default class Select extends BaseComponent {
         this.initElement()
     }
 
+    set select(v) {
+        if (isNull(this.input)) throw new Error('InvalidAttribute: input is null')
+
+        const input = this.input
+        input.value = v
+        const event = new Event('change')
+        input.dispatchEvent(event)
+    }
+
     get selected() {
         for (const item of this.items.values()) if (item.selected) return item
 
@@ -57,6 +66,7 @@ export default class Select extends BaseComponent {
         field.classList.add('field')
 
         const label = document.createElement('label')
+        label.classList.add('label')
         if (!isNull(options.id)) label.htmlFor = options.id
         if (!isNull(options.legend)) label.textContent = options.legend
         if (!options.showLabel) label.classList.add('hidden')
@@ -96,7 +106,7 @@ export default class Select extends BaseComponent {
         return option
     }
 
-    addItems(...values) {
+    addItems(values) {
         const name = this.options.name
         if (isNull(values)) throw Error('Invalid Parameter: null values')
         if (values.length === 0) throw Error('Invalid Parameter: empty values')

@@ -26,7 +26,7 @@ export default class Fieldset extends BaseField {
     }
 
     get defaultOptions() {
-        return  merger(true, Fieldset.DEFAULT_OPTIONS, this.constructor.DEFAULT_OPTIONS)
+        return merger(true, Fieldset.DEFAULT_OPTIONS, this.constructor.DEFAULT_OPTIONS)
     }
 
     initField() {
@@ -48,14 +48,16 @@ export default class Fieldset extends BaseField {
         const options = this.options
         if (useFieldset) {
             element = document.createElement('fieldset')
+            element.classList.add('fieldset')
             legend = document.createElement('legend')
+            legend.classList.add('legend')
             if (!isNull(options.legend)) legend.textContent = this.options.legend
         } else {
             element = document.createElement('div')
-            element.classList.add('fieldset', options.group)
+            element.classList.add('fieldset', 'inline', options.group)
 
             legend = document.createElement('div')
-            legend.classList.add('fieldset-legend')
+            legend.classList.add('fieldset-legend', 'label')
             if (!isNull(options.legend)) legend.textContent = this.options.legend
         }
 

@@ -13,9 +13,14 @@ import Select from './select.js'
 import Series from './series.js'
 
 export default class Widget extends BaseComponent {
+    static STATE_INIT = 0
+    static STATE_DATA_INPUT = 1
+    static STATE_DATA_SOURCE = 2
+
     constructor(element) {
         super(element)
         this.modal = null
+        this.state = null
 
         this.initElements()
     }
@@ -52,9 +57,11 @@ export default class Widget extends BaseComponent {
         const chart = chartFS.content
         const chartType = new Select(chart, S_CHART_TYPE)
         const chartTitle = new InputText(chart, IT_CHART_TYPE)
+        chartFS.hide()
 
         const dsFS = new Fieldset(cs, FS_DATA_SOURCE)
         const dataSource = dsFS.content
+        dsFS.hide()
 
         const xaFS = new Fieldset(dataSource, FS_X_AXIS)
         const xAxis = xaFS.content
@@ -63,14 +70,15 @@ export default class Widget extends BaseComponent {
         const xaColumn = new Select(xAxis, S_X_AXIS_COLUMN)
         const xaScaleType = new FieldsetRadio(xAxis, RF_X_AXIS_SCALE_TYPE)
 
-        const seriesFS = new Fieldset(dataSource, FS_SERIES)
-        const series = seriesFS.content
-        const table = new Series(series)
+        const sFS = new Fieldset(dataSource, FS_SERIES)
+        const s = sFS.content
+        const series = new Series(s)
 
         const showChecked = type => {
             file.hide()
             connect.hide()
             chartType.reset()
+            series.destroy()
             switch (type) {
                 case 'di-type-file':
                     file.show()
@@ -86,7 +94,6 @@ export default class Widget extends BaseComponent {
         const showChartSelected = type => {
             switch (type) {
                 case 'line':
-
                     break
                 case 'bar':
                     break
@@ -97,18 +104,7 @@ export default class Widget extends BaseComponent {
                 case 'contour':
                     break
             }
-            // ds.textContent = type
-        }
-
-        showChecked(type.checked.input.id)
-
-        chartFS.hide()
-        showChartSelected(chartType.selected.value)
-        dsFS.hide()
-
-        form.cancelBtn.onclick = e => {
-            e.preventDefault()
-            modal.close(e)
+            // dataSource.textContent = type
         }
 
         type.fields.forEach(field => {
@@ -117,6 +113,7 @@ export default class Widget extends BaseComponent {
                 showChecked(type)
             }
         })
+        type.checked = 'di-type-file'
 
         chartType.input.onchange = e => {
             const type = e.target.value
@@ -127,8 +124,22 @@ export default class Widget extends BaseComponent {
             console.log(d.columns, `type ${typeof d.columns}`)
             chartFS.show()
             dsFS.show()
-            xaColumn.addItems(...d.columns)
-            table.updateColumnValues(d.columns)
+            chartType.select = 'line'
+            xaColumn.destroy()
+            xaColumn.addItems(d.columns)
+            series.destroy()
+            series.updateColumnValues(d.columns)
+        }
+
+        form.cancelBtn.onclick = e => {
+            e.preventDefault()
+            modal.close(e)
+        }
+
+
+        form.submitBtn.onclick = e => {
+            e.preventDefault()
+            modal.close(e)
         }
 
         // file.input.onchange = e => { console.log(`${e.target.id} -> onchange`) }

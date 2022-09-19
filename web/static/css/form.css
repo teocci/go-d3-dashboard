@@ -1,0 +1,68 @@
+/**
+ * Created by RTT.
+ * Author: teocci@yandex.com on 2022-9월-19
+ */
+.form-wrapper {
+    margin: .625rem .75rem;
+}
+
+form .form-content {
+    margin-bottom: .625rem;
+}
+
+form .form-footer {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    gap: .75rem;
+}
+
+.form-footer button {
+    appearance: none;
+    background-color: var(--main-color);
+    border: 1px solid var(--darker-a15);
+    border-radius: 3px;
+    box-shadow: var(--darker-a10) 0 1px 0;
+    box-sizing: border-box;
+    color: var(--font-light-color);
+    display: inline-block;
+    font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    font-size: 1rem;
+    font-weight: bold;
+    line-height: 1.5rem;
+    padding: .2rem 1rem;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    user-select: none;
+    touch-action: manipulation;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.form-footer button:focus:not(:focus-visible):not(.focus-visible) {
+    box-shadow: none;
+    outline: none;
+}
+
+.form-footer button:hover {
+    background-color: var(--main-dark-color);
+}
+
+.form-footer button:focus {
+    box-shadow: var(--main-color-a40) 0 0 0 3px;
+    outline: none;
+}
+
+.form-footer button:disabled {
+    background-color: var(--main-light-color);
+    border-color: var(--darker-a10);
+    color: var(--white-a80);
+    cursor: default;
+}
+
+.form-footer button:active {
+    background-color: var(--main-accent-color);
+    box-shadow: var(--main-darker-color-a20) 0 1px 0 inset;
+}
