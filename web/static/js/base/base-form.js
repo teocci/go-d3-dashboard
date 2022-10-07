@@ -5,16 +5,37 @@
 import BaseComponent from './base-component.js'
 import InputText from '../components/input-text.js'
 import FieldsetCheckbox from '../components/fieldset-checkbox.js'
+import ObservableObject from './observable-object.js'
 
 export default class BaseForm extends BaseComponent {
     static TAG = 'form'
 
+    static STATE_INIT = 0
+    static STATE_DATA_INPUT = 1
+    static STATE_DATA_SOURCE = 2
+    static STATE_DATA_VALID = 4
+
     constructor(element) {
         super(element)
 
+        this._state = new ObservableObject()
         this.fields = new Map()
 
         this.initForm()
+
+        this.state = BaseForm.STATE_INIT
+    }
+
+    set state(state) {
+        this._state.value = state
+    }
+
+    get state() {
+        return this._state.value
+    }
+
+    set onStateChange(fn) {
+        this._state.onchange = fn
     }
 
     initForm() {
@@ -38,10 +59,10 @@ export default class BaseForm extends BaseComponent {
         footer.append(submitBtn, cancelBtn)
         form.append(content, footer)
 
-
         this.submitBtn = submitBtn
         this.cancelBtn = cancelBtn
         this.content = content
+
         this.dom = form
         if (!isNull(this.holder)) this.holder.append(form)
     }
@@ -74,5 +95,31 @@ export default class BaseForm extends BaseComponent {
     onCancelClick(e) {
         e.preventDefault()
         console.log('cancel click')
+    }
+
+    disableButtons() {
+        this.submitBtn.disabled = true
+        this.cancelBtn.disabled = true
+    }
+
+    enableButtons() {
+        this.submitBtn.disabled = false
+        this.cancelBtn.disabled = false
+    }
+
+    disableSubmitBtn() {
+        this.submitBtn.disabled = true
+    }
+
+    enableSubmitBtn() {
+        this.submitBtn.disabled = false
+    }
+
+    disableCancelBtn() {
+        this.cancelBtn.disabled = true
+    }
+
+    enableCancelBtn() {
+        this.cancelBtn.disabled = false
     }
 }

@@ -11,38 +11,59 @@ import InputFile from './input-file.js'
 import InputText from './input-text.js'
 import Select from './select.js'
 import Series from './series.js'
+import ChartSettingManager from '../managers/chart-setting-manager.js'
+import ObservableObject from '../base/observable-object.js'
+import ChartManager from '../managers/chart-manager.js'
 
 export default class Widget extends BaseComponent {
     static STATE_INIT = 0
     static STATE_DATA_INPUT = 1
     static STATE_DATA_SOURCE = 2
+    static STATE_DATA_VALID = 4
 
     constructor(element) {
         super(element)
+
+        this.id = hashID()
+
         this.modal = null
-        this.state = null
+        this.state = new ObservableObject()
 
         this.initElements()
+
+        this.settingManager = new ChartSettingManager()
+        this.chartManager = new ChartManager(this.content)
     }
 
     initElements() {
         const widget = document.createElement('div')
         widget.classList.add('widget-holder')
+        widget.id = this.id
+
+        const content = document.createElement('div')
+        content.classList.add('widget-content')
 
         const btn = document.createElement('button')
         btn.classList.add('add-widget')
         btn.textContent = '차트 추가'
         btn.onclick = e => this.onAddWidgetClick(e)
 
-        widget.appendChild(btn)
+        widget.append(content, btn)
+
+        this.content = content
 
         this.dom = widget
-        this.holder.appendChild(widget)
+        if (!isNull(this.holder)) this.holder.append(widget)
     }
 
     onAddWidgetClick(e) {
+        const ctx = this
+
         const modal = new Modal(this.dom)
         const content = modal.content
+
+        let data
+        let columns
 
         const form = new BaseForm(content)
         const formContent = form.content
@@ -107,6 +128,58 @@ export default class Widget extends BaseComponent {
             // dataSource.textContent = type
         }
 
+        const validateForm = () => {
+            if (BaseForm.STATE_DATA_SOURCE > form.state ) return {
+                valid: false,
+                error: new Error(`InvalidState: ${form.state}`),
+            }
+
+            const id = ctx.id
+            const config = {
+                uid: id,
+                data: null,
+                columns: null,
+                input: {},
+                chart: {},
+                source: {
+                    axis: {
+                        x: {},
+                        y: {},
+                    },
+                    series: {},
+                },
+            }
+            console.log({type: type.checked})
+            if (type.checked === 'di-type-file') {
+                config.input.type = type.checked.replace('di-type-','')
+                config.data = data
+                config.columns = columns
+                config.chart.type = chartType.selected
+                config.chart.title = chartTitle.value
+                config.source.axis.x.label = xaLabel.value
+                config.source.axis.x.unit = xaUnit.value
+                config.source.axis.x.column = xaColumn.selected
+                config.source.axis.x.scale = xaScaleType.checked.replace('xa-scale-type-','')
+
+                switch (config.chart.type) {
+                    case 'line':
+                        config.source.axis.y = null
+                        config.source.series = series.values
+                        break
+                    case 'bar':
+                        break
+                    case 'bubble':
+                        break
+                    case 'scatter':
+                        break
+                    case 'contour':
+                        break
+                }
+            }
+
+            ctx.settingManager.add(id, config)
+        }
+
         type.fields.forEach(field => {
             field.input.onchange = e => {
                 const type = e.target.id
@@ -121,14 +194,18 @@ export default class Widget extends BaseComponent {
         }
 
         file.onload = d => {
-            console.log(d.columns, `type ${typeof d.columns}`)
+            data = d
+            columns = d.columns
+            console.log({columns}, `type ${typeof columns}`)
+
             chartFS.show()
             dsFS.show()
-            chartType.select = 'line'
+            chartType.selected = 'line'
             xaColumn.destroy()
-            xaColumn.addItems(d.columns)
+            xaColumn.addItems(columns)
             series.destroy()
-            series.updateColumnValues(d.columns)
+            series.updateColumnValues(columns)
+            form.state = BaseForm.STATE_DATA_SOURCE
         }
 
         form.cancelBtn.onclick = e => {
@@ -136,14 +213,36 @@ export default class Widget extends BaseComponent {
             modal.close(e)
         }
 
-
         form.submitBtn.onclick = e => {
             e.preventDefault()
-            modal.close(e)
+            validateForm()
+
+            form.state = BaseForm.STATE_DATA_VALID
+            modal.hide()
+
+            const config = ctx.settingManager.get(ctx.id)
+            this.chartManager.loadSetting(config)
+
+            if (form.state === BaseForm.STATE_DATA_VALID) {
+                ctx.chartManager.render()
+            }
+        }
+
+        form.onStateChange = value => {
+            switch (value) {
+                case BaseForm.STATE_DATA_SOURCE:
+                    form.enableSubmitBtn()
+                    break
+
+                default:
+                    form.disableSubmitBtn()
+            }
         }
 
         // file.input.onchange = e => { console.log(`${e.target.id} -> onchange`) }
-        this.modal = modal
-        this.modal.show()
+        form.state = BaseForm.STATE_DATA_INPUT
+        ctx.modal = modal
+
+        modal.show()
     }
 }

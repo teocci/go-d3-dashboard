@@ -23,6 +23,23 @@ export default class Series extends BaseComponent {
         this.createEmptyTable()
     }
 
+    get values() {
+        const data = []
+        const series = this.series.values()
+        for (const row of series) {
+            const item = {}
+            for (const [k, field] of Object.entries(row)) {
+                if (k === 'actions') continue
+
+                if (k === 'id') item[k] = field
+                else item[k] = field.value
+            }
+            data.push(item)
+        }
+
+        return data
+    }
+
     initAttributes() {
         const attributes = cloner(DEFAULT_LINE_ATTRIBUTES)
         for (const attribute of attributes) {
@@ -113,7 +130,7 @@ export default class Series extends BaseComponent {
             field && td.appendChild(field.dom)
 
             tr.appendChild(td)
-            row[attribute.type] = field
+            row[attribute.id] = field
         }
         this.series.set(hash, row)
 

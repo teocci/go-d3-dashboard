@@ -44,19 +44,28 @@ export default class Select extends BaseComponent {
         this.initElement()
     }
 
-    set select(v) {
-        if (isNull(this.input)) throw new Error('InvalidAttribute: input is null')
+    set value(v) {
+        return this.selected = v
+    }
 
+    get value() {
+        return this.selected
+    }
+
+    set selected(v) {
         const input = this.input
-        input.value = v
+        if (isNull(input)) throw new Error('InvalidAttribute: input is null')
+
         const event = new Event('change')
+        input.value = v
         input.dispatchEvent(event)
     }
 
     get selected() {
-        for (const item of this.items.values()) if (item.selected) return item
+        const input = this.input
+        if (isNull(input)) throw new Error('InvalidAttribute: input is null')
 
-        return null
+        return input.value
     }
 
     initElement() {

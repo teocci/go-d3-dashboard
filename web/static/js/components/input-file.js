@@ -58,28 +58,25 @@ export default class InputFile extends BaseInput {
 
     initListeners() {
         const input = this.input
-        input.onchange = e => { this.loadFile(e) }
+        input.onchange = e => this.loadFile(e)
     }
 
-    loadFile(e) {
+    async loadFile(e) {
         const input = this.input
         const fileInfo = this.fileInfo
         const files = input.files
 
         if (files.length === 0) throw new Error('No files currently selected for load')
-        const file = files[0]
+        const [file] = files
         if (!this.validFileType(file)) throw new Error(`File [${file.name}] is not a valid file type. Update your selection.`)
+
         const info = `[${file.name} | ${this.returnFileSize(file.size)}]`
-        console.log(info)
-        const reader = new FileReader()
-        reader.onload = () => {
-            const dataUrl = reader.result
-            this.loadData(dataUrl).then(d => {
-                fileInfo.textContent = info
-                this.onload(d)
-            })
-        }
-        reader.readAsDataURL(file)
+        console.log({info})
+
+        const text = await file.text()
+        const data = d3.csvParse(text)
+        fileInfo.textContent = info
+        this.onload(data)
     }
 
     async loadData(dataUrl) {

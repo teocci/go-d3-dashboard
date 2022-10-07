@@ -15,6 +15,7 @@ const isNumber = n => 'number' === typeof n
 const isString = s => 'string' === typeof s
 const isNull = a => a == null
 const isUndefined = a => a === undefined
+const isEmptyString = s => isString(s) && !s.trim().length
 
 const serialize = o => JSON.stringify(o)
 const unserialize = s => JSON.parse(s)
@@ -152,6 +153,18 @@ const hash53 = (str, seed = 0, asString = true) => {
     const h = 4294967296 * (2097151 & h2) + (h1 >>> 0)
 
     return asString ? h.toString(16) : h
+}
+
+const hashID = (size = 6) => {
+    const MASK = 0x3d
+    const LETTERS = 'abcdefghijklmnopqrstuvwxyz'
+    const NUMBERS = '1234567890'
+    const charset = `${NUMBERS}${LETTERS}${LETTERS.toUpperCase()}`.split('')
+
+    const bytes = new Uint8Array(size)
+    crypto.getRandomValues(bytes)
+
+    return bytes.reduce((acc, byte) => `${acc}${charset[byte & MASK]}`, '')
 }
 
 function serializeDate() {

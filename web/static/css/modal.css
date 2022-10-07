@@ -76,11 +76,21 @@
     max-height: calc(var(--modal-height) - 65px);
 }
 
+.field > .label:not(.ender, .hidden),
+.fieldset > .label:not(.ender, .hidden) {
+    min-width: 7rem;
+    max-width: 8rem;
+    display: inline-flex;
+    align-items: center;
+}
+
 .field .label:not(.ender, .hidden)::after,
 .fieldset .label:not(.ender, .hidden)::after {
     content: ':';
     padding-left: .5rem;
     padding-right: 1rem;
+    text-align: right;
+    flex: auto;
 }
 
 div.fieldset {
@@ -100,6 +110,10 @@ div.fieldset .fieldset-content {
 
 .inline .fieldset-content > .field:not(:last-child) {
     margin-bottom: 0;
+}
+
+.fieldset-content > .radio-input:not(:last-child) {
+    padding-right: 1rem;
 }
 
 fieldset legend {
@@ -146,7 +160,15 @@ fieldset legend {
 
 .series .actions .action {
     margin-right: .5rem;
+    cursor: pointer;
+    user-select: none;
+    color: var(--main-color);
+    transition: ease 0.2s, color;
 }
+
+.series .actions .action:hover {
+     color: var(--main-contrast-color);
+ }
 
 .series .actions .action:has(.fa-square-plus) {
     display: none;
@@ -186,7 +208,6 @@ fieldset legend {
     display: inline-block;
     overflow: hidden;
     padding: 0 .375rem;
-    margin: 1px 0 .375rem;
     line-height: 1.5rem;
     transition: ease 0.2s, background;
     cursor: pointer;

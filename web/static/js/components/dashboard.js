@@ -3,10 +3,8 @@
  * Author: teocci@yandex.com on 2022-9월-01
  */
 import BaseComponent from '../base/base-component.js'
-import Fieldset from './fieldset.js'
-import InputText from './input-text.js'
-import InputCheckbox from './input-checkbox.js'
 import Widget from './widget.js'
+import WidgetManager from '../managers/widget-manager.js'
 
 export default class Dashboard extends BaseComponent {
     static TAG = 'dashboard'
@@ -14,20 +12,27 @@ export default class Dashboard extends BaseComponent {
     constructor(element) {
         super(element)
 
+        this.widgetManager = new WidgetManager()
+
         this.initElements()
         this.initListeners()
     }
 
     initElements() {
-        const dashboard = document.createElement('div')
-        dashboard.classList.add('dashboard-holder')
+        const $dashboard = document.createElement('div')
+        $dashboard.classList.add('dashboard-holder')
 
-        const widget = new Widget(dashboard)
+        const widget = new Widget($dashboard)
+        this.widgetManager.add(widget.id, widget)
 
-        dashboard.appendChild(widget.dom)
+        $dashboard.appendChild(widget.dom)
 
-        this.dom = dashboard
-        if (!isNull(this.holder)) this.holder.appendChild(dashboard)
+        widget.state.onchange = v => {
+            console.log({v})
+        }
+
+        this.dom = $dashboard
+        if (!isNull(this.holder)) this.holder.appendChild($dashboard)
     }
 
     initListeners() {

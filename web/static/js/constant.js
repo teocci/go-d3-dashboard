@@ -4,32 +4,33 @@
  */
 
 let mainModule
+let settings
 
 const FS_CHART_SETTINGS = {
-    legend: 'Chart Settings',
+    legend: '차트 설정',
 }
 
 const FS_DATA_INPUT = {
-    legend: 'Data Input',
+    legend: '데이터 투입',
 }
 
 const FS_CHART = {
-    legend: 'Chart',
+    legend: '차트',
 }
 
 const RF_DATA_INPUT_TYPE = {
-    legend: 'Type',
+    legend: '타입',
     group: 'di-type',
     useFieldset: false,
     inputs: [
         {
             id: 'di-type-file',
-            label: 'CSV File',
+            label: 'CSV 파일',
             checked: true,
         },
         {
             id: 'di-type-realtime',
-            label: 'Realtime',
+            label: '실시간',
             checked: false,
         },
     ],
@@ -37,7 +38,8 @@ const RF_DATA_INPUT_TYPE = {
 
 const IF_FILE = {
     id: 'di-file',
-    label: 'File',
+    label: '파일',
+    text: '파일 선택',
     accept: '.csv',
     mimeTypes: [
         'text/csv',
@@ -51,7 +53,7 @@ const IT_CONNECTION = {
 
 const S_CHART_TYPE = {
     id: 'chart-type',
-    legend: 'Type',
+    legend: '타입',
     items: [
         {
             label: 'Line Chart',
@@ -79,53 +81,54 @@ const S_CHART_TYPE = {
 
 const IT_CHART_TYPE = {
     id: 'chart-title',
-    label: 'Title',
-    placeholder: 'Insert a Chart Title'
+    label: '제목',
+    placeholder: '차트 제목 삽입',
+    required: true,
 }
 
 const FS_DATA_SOURCE = {
-    legend: 'Data Source',
+    legend: '데이터 소스',
 }
 
 const FS_X_AXIS = {
-    legend: 'X-Axis',
+    legend: 'X축',
 }
 
 const IT_X_AXIS_LABEL = {
     id: 'xa-label',
-    label: 'Label',
+    label: '레이블',
     placeholder: 'Insert x-axis label'
 }
 
 const IT_X_AXIS_UNIT = {
     id: 'xa-unit',
-    label: 'Unit',
+    label: '단위',
 }
 
 const S_X_AXIS_COLUMN = {
     id: 'xa-column',
-    legend: 'Column',
+    legend: '컬럼',
     items: [],
 }
 
 const RF_X_AXIS_SCALE_TYPE = {
-    legend: 'Scale Type',
-    group: 'xa-type',
+    legend: '스케일 타입',
+    group: 'xa-scale-type',
     useFieldset: false,
     inputs: [
         {
             id: 'xa-scale-type-linear',
-            label: 'Linear',
+            label: '선형',
             checked: true,
         },
         {
             id: 'xa-scale-type-time',
-            label: 'Time',
+            label: '시계열',
             checked: false,
         },
         {
             id: 'xa-scale-type-log',
-            label: 'Log',
+            label: '로그',
             checked: false,
         },
     ],
@@ -166,16 +169,16 @@ const DEFAULT_LINE_ATTRIBUTES = [
         options: {
             items: [
                 {
-                    label: 'Linear',
+                    label: '선형',
                     value: 'linear',
                     selected: true,
                 },
                 {
-                    label: 'Time',
+                    label: '시계열',
                     value: 'time',
                 },
                 {
-                    label: 'Log',
+                    label: '로그',
                     value: 'log',
                 },
             ],
@@ -188,16 +191,16 @@ const DEFAULT_LINE_ATTRIBUTES = [
         options: {
             items: [
                 {
-                    label: 'Linear',
+                    label: '리니어',
                     value: 'linear',
                     selected: true,
                 },
                 {
-                    label: 'Smooth',
+                    label: '스무스',
                     value: 'smooth',
                 },
                 {
-                    label: 'Step',
+                    label: '스텝',
                     value: 'step',
                 },
             ],

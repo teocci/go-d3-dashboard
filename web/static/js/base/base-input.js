@@ -30,11 +30,17 @@ export default class BaseInput extends BaseComponent {
         return merger(true, BaseInput.DEFAULT_INPUT_OPTIONS, this.constructor.DEFAULT_OPTIONS)
     }
 
-    set value(v) {
-        if (isNull(this.input)) throw new Error('InvalidAttribute: input is null')
-
+    get value() {
         const input = this.input
+        if (isNull(input)) throw new Error('InvalidAttribute: input is null')
+        return input.value
+    }
+
+    set value(v) {
+        const input = this.input
+        if (isNull(input)) throw new Error('InvalidAttribute: input is null')
         input.value = v
+
         const event = new Event('change')
         input.dispatchEvent(event)
     }
