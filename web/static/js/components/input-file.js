@@ -74,8 +74,33 @@ export default class InputFile extends BaseInput {
         console.log({info})
 
         const text = await file.text()
-        const data = d3.csvParse(text)
+        const raw = d3.csvParse(text)
         fileInfo.textContent = info
+
+        const data = []
+        const columns = new Map()
+
+        for (const s of raw.columns) {
+            columns.set(s, toKebabCase(s))
+        }
+
+        for (const row of raw) {
+            const item = {}
+            let allNull = true
+            for (const s of raw.columns) {
+                allNull &= isNull(row[s])
+                item[columns.get(s)] = row[s]
+            }
+            if (!allNull) data.push(item)
+        }
+        data.columns = [...columns.values()]
+        data.file = {
+            name: file.name,
+            size: file.size,
+        }
+
+        console.log({converted: data})
+
         this.onload(data)
     }
 

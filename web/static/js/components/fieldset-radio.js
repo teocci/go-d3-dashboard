@@ -44,8 +44,8 @@ export default class FieldsetRadio extends Fieldset {
         return null
     }
 
-    set value(id) {
-        return this.checked = id
+    set value(v) {
+        this.checked = v
     }
 
     get value() {
@@ -60,6 +60,11 @@ export default class FieldsetRadio extends Fieldset {
         return null
     }
 
+    /**
+     * Checks the radio input by id
+     *
+     * @param id
+     */
     set checked(id) {
         const field = this.fieldById(id)
         if (isNull(field)) throw new Error('InvalidParameter: null field')
@@ -69,7 +74,12 @@ export default class FieldsetRadio extends Fieldset {
         field.input.dispatchEvent(event)
     }
 
+    /**
+     * Returns the value of the radio checked
+     *
+     * @returns {String}
+     */
     get checked() {
-        return this.checkedField.input.id
+        return this.checkedField.value
     }
 }

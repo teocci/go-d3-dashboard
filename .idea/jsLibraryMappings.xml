@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="JavaScriptLibraryMappings">
-    <file url="PROJECT" libraries="{D3, chart.js}" />
+    <file url="PROJECT" libraries="{D3, chart.js, chartjs-adapter-date-fns}" />
   </component>
 </project>

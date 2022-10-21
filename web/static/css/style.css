@@ -4,8 +4,12 @@
  */
 @import "variables.css";
 @import "default.css";
+@import "dashboard.css";
+@import "widget.css";
 @import "modal.css";
 @import "form.css";
+@import "chart-panel.css";
+@import "dropdown.css";
 
 main {
     width: 100vw;
@@ -14,6 +18,7 @@ main {
     flex-flow: row wrap;
     justify-content: center;
     align-items: center;
+    background-color: rgb(17, 18, 23);
 }
 
 footer {

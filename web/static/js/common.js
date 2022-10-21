@@ -28,7 +28,7 @@ const toCamelCase = s => s && toSnakeCase(s).toLowerCase()
 const toPascalCase = s => s && trimSpaces(s).toLowerCase()
     .replace(REGEX_PASCAL_CASE, m => `${m.charAt(0).toUpperCase()}${m.substring(1).toLowerCase()}`)
 
-const cloner = (o) => {
+const cloner = o => {
     let idx = 1
     const process = v => {
         if (isArray(v)) return cloneArray(v)

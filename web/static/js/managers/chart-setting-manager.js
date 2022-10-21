@@ -1,22 +1,12 @@
+import BaseManager from '../base/base-manager.js'
+
 /**
  * Created by RTT.
  * Author: teocci@yandex.com on 2022-10월-04
  */
-export default class ChartSettingManager {
+
+export default class ChartSettingManager extends BaseManager {
     constructor() {
-        this.settings = new Map()
-        settings = this.settings
-    }
-
-    get(id) {
-        return this.settings.get(id) ?? null
-    }
-
-    add(id, setting) {
-        return this.settings.set(id, setting)
-    }
-
-    has(id) {
-        return this.settings.has(id)
+        super()
     }
 }

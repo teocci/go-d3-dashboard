@@ -8,18 +8,25 @@ export default class InputColor extends BaseInput {
     static TAG = 'color'
 
     static DEFAULT_COLORS = [
-        {name: 'black', color: '#000000'},
-        {name: 'silver', color: '#c0c0c0'},
-        {name: 'gray', color: '#808080'},
-        {name: 'maroon', color: '#800000'},
+        {name: 'silver', color: '#CCCCDC'},
         {name: 'red', color: '#ff0000'},
-        {name: 'purple', color: '#800080'},
+        {name: 'purple', color: '#B877D9'},
         {name: 'green', color: '#008000'},
+        {name: 'light-green', color: '#629E51'},
+        {name: 'dark-green', color: '#1A7F4B'},
         {name: 'yellow', color: '#ffff00'},
-        {name: 'navy', color: '#000080'},
-        {name: 'blue', color: '#0000ff'},
+        {name: 'light-blue', color: '#82B5D8'},
+        {name: 'blue', color: '#33A2E5'},
         {name: 'teal', color: '#008080'},
+        {name: 'dark-teal', color: '#5195CE'},
         {name: 'aqua', color: '#00ffff'},
+        {name: 'light-aqua', color: '#70DBED'},
+        {name: 'salmon', color: '#E14D42'},
+        {name: 'sexy-red', color: '#F2495C'},
+        {name: 'orange', color: '#FF780A'},
+        {name: 'happy-yellow', color: '#EAB839'},
+        {name: 'banana', color: '#F2C96D'},
+        {name: 'vanilla', color: '#F9E2D2'},
     ]
 
     static DEFAULT_OPTIONS = {

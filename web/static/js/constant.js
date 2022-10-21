@@ -6,139 +6,132 @@
 let mainModule
 let settings
 
-const FS_CHART_SETTINGS = {
-    legend: '차트 설정',
-}
-
-const FS_DATA_INPUT = {
-    legend: '데이터 투입',
-}
-
-const FS_CHART = {
-    legend: '차트',
-}
-
-const RF_DATA_INPUT_TYPE = {
-    legend: '타입',
-    group: 'di-type',
-    useFieldset: false,
-    inputs: [
-        {
-            id: 'di-type-file',
-            label: 'CSV 파일',
-            checked: true,
+const DEFAULT_STRUCTURE_SETTINGS = {
+    fieldset: {
+        legend: '차트 설정',
+    },
+    input: {
+        fieldset: {
+            legend: '데이터 투입',
         },
-        {
-            id: 'di-type-realtime',
-            label: '실시간',
-            checked: false,
+        mode: {
+            legend: '타입',
+            group: 'di-type',
+            useFieldset: false,
+            inputs: [
+                {
+                    id: 'di-type-file',
+                    label: 'CSV 파일',
+                    value: 'file',
+                    checked: true,
+                },
+                {
+                    id: 'di-type-realtime',
+                    label: '실시간',
+                    value: 'realtime',
+                    checked: false,
+                },
+            ],
         },
-    ],
-}
-
-const IF_FILE = {
-    id: 'di-file',
-    label: '파일',
-    text: '파일 선택',
-    accept: '.csv',
-    mimeTypes: [
-        'text/csv',
-    ]
-}
-
-const IT_CONNECTION = {
-    id: 'di-connection',
-    label: 'Connection',
-}
-
-const S_CHART_TYPE = {
-    id: 'chart-type',
-    legend: '타입',
-    items: [
-        {
-            label: 'Line Chart',
-            value: 'line',
-            selected: true,
+        file: {
+            id: 'di-file',
+            label: '파일',
+            text: '파일 선택',
+            accept: '.csv',
+            mimeTypes: [
+                'text/csv',
+            ],
         },
-        {
-            label: 'Bar Chart',
-            value: 'bar',
+        connect: {
+            id: 'di-connection',
+            label: 'Connection',
         },
-        {
-            label: 'Bubble Chart',
-            value: 'bubble',
+    },
+    chart: {
+        fieldset: {
+            legend: '차트',
         },
-        {
-            label: 'Scatter Chart',
-            value: 'scatter',
+        type: {
+            id: 'chart-type',
+            legend: '타입',
+            items: [
+                {
+                    label: 'Line Chart',
+                    value: 'line',
+                    selected: true,
+                },
+                {
+                    label: 'Bar Chart',
+                    value: 'bar',
+                },
+                {
+                    label: 'Bubble Chart',
+                    value: 'bubble',
+                },
+                {
+                    label: 'Scatter Chart',
+                    value: 'scatter',
+                },
+            ],
         },
-        {
-            label: 'Contour Chart',
-            value: 'contour',
+        title: {
+            id: 'chart-title',
+            label: '제목',
+            placeholder: '차트 제목 입력',
+            required: true,
         },
-    ],
-}
-
-const IT_CHART_TYPE = {
-    id: 'chart-title',
-    label: '제목',
-    placeholder: '차트 제목 삽입',
-    required: true,
-}
-
-const FS_DATA_SOURCE = {
-    legend: '데이터 소스',
-}
-
-const FS_X_AXIS = {
-    legend: 'X축',
-}
-
-const IT_X_AXIS_LABEL = {
-    id: 'xa-label',
-    label: '레이블',
-    placeholder: 'Insert x-axis label'
-}
-
-const IT_X_AXIS_UNIT = {
-    id: 'xa-unit',
-    label: '단위',
-}
-
-const S_X_AXIS_COLUMN = {
-    id: 'xa-column',
-    legend: '컬럼',
-    items: [],
-}
-
-const RF_X_AXIS_SCALE_TYPE = {
-    legend: '스케일 타입',
-    group: 'xa-scale-type',
-    useFieldset: false,
-    inputs: [
-        {
-            id: 'xa-scale-type-linear',
-            label: '선형',
-            checked: true,
+    },
+    source: {
+        fieldset: {
+            legend: '데이터 소스',
         },
-        {
-            id: 'xa-scale-type-time',
-            label: '시계열',
-            checked: false,
-        },
-        {
-            id: 'xa-scale-type-log',
-            label: '로그',
-            checked: false,
-        },
-    ],
+    },
 }
 
-const FS_SERIES = {
-    legend: 'Series',
+const DEFAULT_AXIS = {
+    fieldset: {
+        legend: '축',
+    },
+    label: {
+        id: 'axis-label',
+        label: '레이블',
+        placeholder: '축 레이블 입력',
+    },
+    unit: {
+        id: 'axis-unit',
+        label: '단위',
+    },
+    column: {
+        id: 'axis-column',
+        legend: '컬럼',
+        items: [],
+    },
+    scale: {
+        legend: '스케일 타입',
+        group: 'axis-scale-type',
+        useFieldset: false,
+        inputs: [
+            {
+                id: 'axis-scale-type-linear',
+                label: '선형',
+                value: 'linear',
+                checked: true,
+            },
+            {
+                id: 'axis-scale-type-time',
+                label: '시계열',
+                value: 'time',
+                checked: false,
+            },
+            {
+                id: 'axis-scale-type-log',
+                label: '로그',
+                value: 'log',
+                checked: false,
+            },
+        ],
+    },
 }
-
-
 
 const DEFAULT_LINE_ATTRIBUTES = [
     {
@@ -211,7 +204,7 @@ const DEFAULT_LINE_ATTRIBUTES = [
         label: '선 길이',
         type: 'number',
         options: {
-            value: 1,
+            value: 2,
             step: .5,
             min: '0',
             max: 10,
@@ -243,6 +236,145 @@ const DEFAULT_LINE_ATTRIBUTES = [
         options: {},
     },
 ]
+
+const LINE_SERIES = {
+    fieldset: {
+        legend: '시리즈',
+    },
+    series: DEFAULT_LINE_ATTRIBUTES,
+}
+
+const FS_SETTINGS = {
+    legend: '차트 설정',
+}
+
+const FS_DATA_INPUT = {
+    legend: '데이터 투입',
+}
+
+const FS_CHART = {
+    legend: '차트',
+}
+
+const RF_DATA_INPUT_MODE = {
+    legend: '타입',
+    group: 'di-type',
+    useFieldset: false,
+    inputs: [
+        {
+            id: 'di-type-file',
+            label: 'CSV 파일',
+            checked: true,
+        },
+        {
+            id: 'di-type-realtime',
+            label: '실시간',
+            checked: false,
+        },
+    ],
+}
+
+const IF_FILE = {
+    id: 'di-file',
+    label: '파일',
+    text: '파일 선택',
+    accept: '.csv',
+    mimeTypes: [
+        'text/csv',
+    ],
+}
+
+const IT_CONNECTION = {
+    id: 'di-connection',
+    label: 'Connection',
+}
+
+const S_CHART_TYPE = {
+    id: 'chart-type',
+    legend: '타입',
+    items: [
+        {
+            label: 'Line Chart',
+            value: 'line',
+            selected: true,
+        },
+        {
+            label: 'Bar Chart',
+            value: 'bar',
+        },
+        {
+            label: 'Bubble Chart',
+            value: 'bubble',
+        },
+        {
+            label: 'Scatter Chart',
+            value: 'scatter',
+        },
+        {
+            label: 'Contour Chart',
+            value: 'contour',
+        },
+    ],
+}
+
+const IT_CHART_TITLE = {
+    id: 'chart-title',
+    label: '제목',
+    placeholder: '차트 제목 삽입',
+    required: true,
+}
+
+const FS_DATA_SOURCE = {
+    legend: '데이터 소스',
+}
+
+const FS_X_AXIS = {
+    legend: 'X축',
+}
+
+const IT_X_AXIS_LABEL = {
+    id: 'xa-label',
+    label: '레이블',
+    placeholder: 'Insert x-axis label',
+}
+
+const IT_X_AXIS_UNIT = {
+    id: 'xa-unit',
+    label: '단위',
+}
+
+const S_X_AXIS_COLUMN = {
+    id: 'xa-column',
+    legend: '컬럼',
+    items: [],
+}
+
+const RF_X_AXIS_SCALE_TYPE = {
+    legend: '스케일 타입',
+    group: 'xa-scale-type',
+    useFieldset: false,
+    inputs: [
+        {
+            id: 'xa-scale-type-linear',
+            label: '선형',
+            checked: true,
+        },
+        {
+            id: 'xa-scale-type-time',
+            label: '시계열',
+            checked: false,
+        },
+        {
+            id: 'xa-scale-type-log',
+            label: '로그',
+            checked: false,
+        },
+    ],
+}
+
+const FS_SERIES = {
+    legend: 'Series',
+}
 
 const DEFAULT_BAR_ATTRIBUTES = [
     {
@@ -303,9 +435,6 @@ const DEFAULT_BAR_ATTRIBUTES = [
         options: {},
     },
 ]
-
-
-
 
 const TEST_FIELDS = {
     fieldset: {

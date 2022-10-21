@@ -12,19 +12,20 @@ import Actions from './actions.js'
 export default class Series extends BaseComponent {
     static TAG = 'series'
 
-    constructor(element) {
+    constructor(element, options) {
         super(element)
 
         this.series = new Map()
         this.attributes = new Map()
 
-        this.initAttributes()
+        this.initAttributes(options)
         this.initField()
         this.createEmptyTable()
     }
 
     get values() {
         const data = []
+
         const series = this.series.values()
         for (const row of series) {
             const item = {}
@@ -40,8 +41,8 @@ export default class Series extends BaseComponent {
         return data
     }
 
-    initAttributes() {
-        const attributes = cloner(DEFAULT_LINE_ATTRIBUTES)
+    initAttributes(options) {
+        const attributes = cloner(options)
         for (const attribute of attributes) {
             this.attributes.set(attribute.id, attribute)
         }
@@ -165,7 +166,7 @@ export default class Series extends BaseComponent {
         column.options.items = []
         for (const [i, v] of values.entries()) {
             const item = {
-                value: toKebabCase(v),
+                value: v,
                 label: toPascalCase(v),
                 selected: i === 0 ?? undefined,
             }

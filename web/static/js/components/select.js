@@ -45,7 +45,7 @@ export default class Select extends BaseComponent {
     }
 
     set value(v) {
-        return this.selected = v
+        this.selected = v
     }
 
     get value() {
@@ -122,7 +122,7 @@ export default class Select extends BaseComponent {
 
         values.forEach((value, idx) => {
             const item = {
-                value: toKebabCase(value),
+                value: value,
                 label: toPascalCase(value),
                 selected: idx === 0 ?? undefined,
             }

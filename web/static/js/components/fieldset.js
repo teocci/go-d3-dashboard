@@ -32,38 +32,38 @@ export default class Fieldset extends BaseField {
     initField() {
         const options = this.options
 
-        const fieldset = this.createElement(options.useFieldset)
+        const $fieldset = this.createElement(options.useFieldset)
+        const $content = document.createElement('div')
+        $content.classList.add('fieldset-content')
+        $fieldset.append($content)
 
-        const content = document.createElement('div')
-        content.classList.add('fieldset-content')
-        fieldset.append(content)
-
-        this.content = content
-        this.dom = fieldset
-        if (!isNull(this.holder)) this.holder.appendChild(fieldset)
+        this.content = $content
+        this.dom = $fieldset
+        if (!isNull(this.holder)) this.holder.appendChild($fieldset)
     }
 
     createElement(useFieldset) {
-        let element, legend
         const options = this.options
+
+        let $element, $legend
         if (useFieldset) {
-            element = document.createElement('fieldset')
-            element.classList.add('fieldset')
-            legend = document.createElement('legend')
-            legend.classList.add('legend')
-            if (!isNull(options.legend)) legend.textContent = this.options.legend
+            $element = document.createElement('fieldset')
+            $element.classList.add('fieldset')
+            $legend = document.createElement('legend')
+            $legend.classList.add('legend')
+
+            if (!isNull(options.legend)) $legend.textContent = this.options.legend
         } else {
-            element = document.createElement('div')
-            element.classList.add('fieldset', 'inline', options.group)
+            $element = document.createElement('div')
+            $element.classList.add('fieldset', 'inline', options.group)
+            $legend = document.createElement('div')
+            $legend.classList.add('fieldset-legend', 'label')
 
-            legend = document.createElement('div')
-            legend.classList.add('fieldset-legend', 'label')
-            if (!isNull(options.legend)) legend.textContent = this.options.legend
+            if (!isNull(options.legend)) $legend.textContent = this.options.legend
         }
+        $element.appendChild($legend)
 
-        element.appendChild(legend)
-
-        return element
+        return $element
     }
 
     addField(...fields) {
@@ -76,5 +76,10 @@ export default class Fieldset extends BaseField {
             this.fields.set(id, field)
             this.content.appendChild(field)
         })
+    }
+
+    clear() {
+        this.destroyChildren(this.content)
+        this.fields.clear()
     }
 }

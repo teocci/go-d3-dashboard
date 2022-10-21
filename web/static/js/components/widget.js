@@ -13,7 +13,13 @@ import Select from './select.js'
 import Series from './series.js'
 import ChartSettingManager from '../managers/chart-setting-manager.js'
 import ObservableObject from '../base/observable-object.js'
-import ChartManager from '../managers/chart-manager.js'
+import ChartPanel from './chart-panel.js'
+import Dropdown from './dropdown.js'
+
+const FORM_STATE_INIT = BaseForm.STATE_INIT
+const FORM_STATE_DATA_INPUT = BaseForm.STATE_DATA_INPUT
+const FORM_STATE_DATA_SOURCE = BaseForm.STATE_DATA_SOURCE
+const FORM_STATE_DATA_VALID = BaseForm.STATE_DATA_VALID
 
 export default class Widget extends BaseComponent {
     static STATE_INIT = 0
@@ -29,183 +35,393 @@ export default class Widget extends BaseComponent {
         this.modal = null
         this.state = new ObservableObject()
 
-        this.initElements()
+        this.initWidget()
 
         this.settingManager = new ChartSettingManager()
-        this.chartManager = new ChartManager(this.content)
+        this.chartPanel = new ChartPanel(this.$content)
+
+        this.initListeners()
     }
 
-    initElements() {
-        const widget = document.createElement('div')
-        widget.classList.add('widget-holder')
-        widget.id = this.id
+    openConfig() {
+        return this.settingManager.get(this.id)
+    }
 
-        const content = document.createElement('div')
-        content.classList.add('widget-content')
+    saveConfig(config) {
+        this.settingManager.add(this.id, config)
+    }
 
-        const btn = document.createElement('button')
-        btn.classList.add('add-widget')
-        btn.textContent = '차트 추가'
-        btn.onclick = e => this.onAddWidgetClick(e)
+    deleteConfig() {
+        this.settingManager.delete(this.id)
+    }
 
-        widget.append(content, btn)
+    initWidget() {
+        const $widget = document.createElement('div')
+        $widget.classList.add('widget-holder')
+        $widget.id = this.id
 
-        this.content = content
+        const $content = document.createElement('div')
+        $content.classList.add('widget-content', 'hidden')
 
-        this.dom = widget
-        if (!isNull(this.holder)) this.holder.append(widget)
+        const $control = document.createElement('div')
+        $control.classList.add('widget-control')
+
+        const $btn = document.createElement('button')
+        $btn.classList.add('add-widget')
+        $btn.textContent = '차트 추가'
+
+        $control.appendChild($btn)
+        $widget.append($content, $control)
+
+        this.$content = $content
+        this.$control = $control
+        this.$button = $btn
+
+        this.dom = $widget
+        if (!isNull(this.holder)) this.holder.append($widget)
+    }
+
+    initListeners() {
+        this.$button.onclick = e => this.onAddWidgetClick(e)
+        this.chartPanel.menuHandler = e => this.menuItemClick(e)
     }
 
     onAddWidgetClick(e) {
-        const ctx = this
+        this.loadModal(e)
+    }
 
-        const modal = new Modal(this.dom)
-        const content = modal.content
+    createConfig() {
+        const id = this.id
+        return {
+            id,
+            data: null,
+            columns: null,
+            input: {
+                mode: 'file',
+                info: null,
+            },
+            chart: {
+                type: 'line',
+                title: null,
+            },
+            source: {
+                axis: {
+                    x: {},
+                    y: null,
+                },
+                radius: null,
+                series: null,
+            },
+        }
+    }
 
-        let data
-        let columns
+    initStructure() {
+        this.structure = {
+            options: cloner(DEFAULT_STRUCTURE_SETTINGS),
+            config: null,
+            modal: null,
+            form: null,
+            fieldset: null,
+            input: {
+                fieldset: null,
+                mode: null,
+                file: null,
+                connect: null,
+            },
+            chart: {
+                fieldset: null,
+                type: null,
+                title: null,
+            },
+            source: {
+                fieldset: null,
+                axis: {},
+                radius: null,
+                datasets: {
+                    fieldset: null,
+                    series: null,
+                },
+            },
+        }
+    }
 
-        const form = new BaseForm(content)
-        const formContent = form.content
-        const csFS = new Fieldset(formContent, FS_CHART_SETTINGS)
-        const cs = csFS.content
-        const dataInput = new Fieldset(cs, FS_DATA_INPUT)
-        const type = new FieldsetRadio(dataInput.content, RF_DATA_INPUT_TYPE)
-        const file = new InputFile(dataInput.content, IF_FILE)
-        const connect = new InputText(dataInput.content, IT_CONNECTION)
+    initAxis(id) {
+        const options = cloner(DEFAULT_AXIS)
+        options.label.id = `${id}-${options.label.id}`
+        options.unit.id = `${id}-${options.unit.id}`
+        options.column.id = `${id}-${options.column.id}`
+        options.scale.group = `${id}-${options.scale.group}`
 
-        const chartFS = new Fieldset(cs, FS_CHART)
-        const chart = chartFS.content
-        const chartType = new Select(chart, S_CHART_TYPE)
-        const chartTitle = new InputText(chart, IT_CHART_TYPE)
-        chartFS.hide()
+        for (const i in options.scale.inputs) {
+            options.scale.inputs[i].id = `${id}-${options.scale.inputs[i].id}`
+        }
 
-        const dsFS = new Fieldset(cs, FS_DATA_SOURCE)
-        const dataSource = dsFS.content
-        dsFS.hide()
+        const ID = id.toUpperCase()
+        options.fieldset.legend = `${ID}${options.fieldset.legend}`
+        options.label.placeholder = `${ID}${options.label.placeholder}`
 
-        const xaFS = new Fieldset(dataSource, FS_X_AXIS)
-        const xAxis = xaFS.content
-        const xaLabel = new InputText(xAxis, IT_X_AXIS_LABEL)
-        const xaUnit = new InputText(xAxis, IT_X_AXIS_UNIT)
-        const xaColumn = new Select(xAxis, S_X_AXIS_COLUMN)
-        const xaScaleType = new FieldsetRadio(xAxis, RF_X_AXIS_SCALE_TYPE)
+        return options
+    }
 
-        const sFS = new Fieldset(dataSource, FS_SERIES)
-        const s = sFS.content
-        const series = new Series(s)
+    createDataInputSection() {
+        const options = this.structure.options.input
 
-        const showChecked = type => {
-            file.hide()
-            connect.hide()
-            chartType.reset()
+        const $holder = this.structure.fieldset.content
+        const fieldset = new Fieldset($holder, options.fieldset)
+
+        const $content = fieldset.content
+        const mode = new FieldsetRadio($content, options.mode)
+        const file = new InputFile($content, options.file)
+        const connect = new InputText($content, options.connect)
+
+        const input = this.structure.input
+        input.fieldset = fieldset
+        input.mode = mode
+        input.file = file
+        input.connect = connect
+    }
+
+    createChartSection() {
+        const options = this.structure.options.chart
+
+        const $holder = this.structure.fieldset.content
+        const fieldset = new Fieldset($holder, options.fieldset)
+        fieldset.hide()
+
+        const $chart = fieldset.content
+        const type = new Select($chart, options.type)
+        const title = new InputText($chart, options.title)
+
+        const chart = this.structure.chart
+        chart.fieldset = fieldset
+        chart.type = type
+        chart.title = title
+    }
+
+    createDataSourceSection() {
+        const options = this.structure.options.chart
+
+        const $holder = this.structure.fieldset.content
+        const fieldset = new Fieldset($holder, options.fieldset)
+        fieldset.hide()
+
+        const source = this.structure.source
+        source.fieldset = fieldset
+    }
+
+    createAxisSection(id) {
+        const options = this.initAxis(id)
+        console.log({options})
+
+        const $holder = this.structure.source.fieldset.content
+        const fieldset = new Fieldset($holder, options.fieldset)
+
+        const $content = fieldset.content
+        const label = new InputText($content, options.label)
+        const unit = new InputText($content, options.unit)
+        const column = new Select($content, options.column)
+        const scale = new FieldsetRadio($content, options.scale)
+
+        this.structure.source.axis[id] = {
+            fieldset,
+            label,
+            unit,
+            column,
+            scale,
+        }
+    }
+
+    createSeriesSection(options) {
+        const $holder = this.structure.source.fieldset.content
+        const fieldset = new Fieldset($holder, options.fieldset)
+
+        const $content = fieldset.content
+        const series = new Series($content, options.series)
+
+        const datasets = this.structure.source.datasets
+        datasets.fieldset = fieldset
+        datasets.series = series
+    }
+
+    updateColumns() {
+        const config = this.structure.config
+        const columns = config.columns
+
+        const source = this.structure.source
+        const axis = source.axis
+
+        for (const v of Object.values(axis)) {
+            v.column.destroy()
+            v.column.addItems(columns)
+        }
+
+        const series = source.datasets.series
+        if (series) {
             series.destroy()
-            switch (type) {
-                case 'di-type-file':
-                    file.show()
-                    chartType.enable()
+            series.updateColumnValues(columns)
+        }
+    }
+
+    updateDataSourceSection(type) {
+        const ctx = this
+        ctx.structure.source.fieldset.clear()
+
+        switch (type) {
+            case 'line':
+                ctx.createAxisSection('x')
+                ctx.createSeriesSection(LINE_SERIES)
+                break
+            case 'bar':
+                ctx.createAxisSection('x')
+                ctx.createAxisSection('y')
+                break
+            case 'bubble':
+                break
+            case 'scatter':
+                break
+            case 'contour':
+                break
+        }
+
+        ctx.updateColumns()
+    }
+
+    loadData(d) {
+        const config = this.structure.config
+        config.data = d
+        config.columns = d.columns
+        config.input.info = d.file
+
+        const chart = this.structure.chart
+        chart.fieldset.show()
+        chart.title.value = config.data.file.name || null
+        chart.type.selected = 'line'
+
+        const source = this.structure.source
+        source.fieldset.show()
+
+        this.updateColumns()
+
+        const form = this.structure.form
+        form.state = FORM_STATE_DATA_SOURCE
+    }
+
+    loadModal(e) {
+        const ctx = this
+        ctx.initStructure()
+        ctx.structure.config = ctx.openConfig() ?? ctx.createConfig()
+        const config = ctx.structure.config
+        console.log({config})
+
+        const modal = new Modal(this.$control)
+        const $modal = modal.$content
+
+        const form = new BaseForm($modal)
+        const $form = form.content
+
+        const options = ctx.structure.options
+        const fieldset = new Fieldset($form, options.fieldset)
+
+        ctx.structure.modal = modal
+        ctx.structure.form = form
+        ctx.structure.fieldset = fieldset
+
+        ctx.createDataInputSection()
+        ctx.createChartSection()
+        ctx.createDataSourceSection()
+
+        const showChecked = mode => {
+            const input = ctx.structure.input
+            input.file.hide()
+            input.connect.hide()
+
+            const chart = this.structure.chart
+            chart.type.reset()
+
+            const datasets = this.structure.source.datasets
+            datasets.series?.destroy()
+
+            switch (mode) {
+                case 'file':
+                    input.file.show()
+                    chart.type.enable()
+                    config.input.mode = mode
+
                     break
-                case 'di-type-realtime':
-                    connect.show()
-                    chartType.disable()
+                case 'realtime':
+                    input.connect.show()
+                    chart.type.disable()
+                    config.input.mode = mode
+
                     break
             }
         }
 
         const showChartSelected = type => {
-            switch (type) {
-                case 'line':
-                    break
-                case 'bar':
-                    break
-                case 'bubble':
-                    break
-                case 'scatter':
-                    break
-                case 'contour':
-                    break
-            }
-            // dataSource.textContent = type
+            ctx.updateDataSourceSection(type)
         }
 
         const validateForm = () => {
-            if (BaseForm.STATE_DATA_SOURCE > form.state ) return {
+            if (FORM_STATE_DATA_SOURCE > form.state) return {
                 valid: false,
                 error: new Error(`InvalidState: ${form.state}`),
             }
 
-            const id = ctx.id
-            const config = {
-                uid: id,
-                data: null,
-                columns: null,
-                input: {},
-                chart: {},
-                source: {
-                    axis: {
-                        x: {},
-                        y: {},
-                    },
-                    series: {},
-                },
-            }
-            console.log({type: type.checked})
-            if (type.checked === 'di-type-file') {
-                config.input.type = type.checked.replace('di-type-','')
-                config.data = data
-                config.columns = columns
-                config.chart.type = chartType.selected
-                config.chart.title = chartTitle.value
-                config.source.axis.x.label = xaLabel.value
-                config.source.axis.x.unit = xaUnit.value
-                config.source.axis.x.column = xaColumn.selected
-                config.source.axis.x.scale = xaScaleType.checked.replace('xa-scale-type-','')
+            const mode = this.structure.input.mode.value
+            config.input.mode = mode
+            config.chart.type = chart.type.selected
+            config.chart.title = chart.title.value
 
-                switch (config.chart.type) {
-                    case 'line':
-                        config.source.axis.y = null
-                        config.source.series = series.values
-                        break
-                    case 'bar':
-                        break
-                    case 'bubble':
-                        break
-                    case 'scatter':
-                        break
-                    case 'contour':
-                        break
-                }
+            switch (mode) {
+                case 'file':
+                    const chart = this.structure.chart
+                    const x = this.structure.source.axis.x
+                    config.source.axis.x.label = x.label.value
+                    config.source.axis.x.unit = x.unit.value
+                    config.source.axis.x.column = x.column.value
+                    config.source.axis.x.scale = x.scale.value
+
+                    switch (config.chart.type) {
+                        case 'line':
+                            const series = this.structure.source.datasets.series
+                            config.source.axis.y = null
+                            config.source.series = series.values
+                            break
+                        case 'bar':
+                            break
+                        case 'bubble':
+                            break
+                        case 'scatter':
+                            break
+                        case 'contour':
+                            break
+                    }
+                    break
+                case 'realtime':
+                    break
+                default:
             }
 
-            ctx.settingManager.add(id, config)
+            ctx.settingManager.add(this.id, config)
         }
 
-        type.fields.forEach(field => {
+        const input = this.structure.input
+        input.mode.fields.forEach(field => {
             field.input.onchange = e => {
-                const type = e.target.id
-                showChecked(type)
+                const mode = e.target.value
+                showChecked(mode)
             }
         })
-        type.checked = 'di-type-file'
+        input.mode.checked = 'di-type-file'
 
-        chartType.input.onchange = e => {
+        const chart = this.structure.chart
+        chart.type.input.onchange = e => {
             const type = e.target.value
             showChartSelected(type)
         }
 
-        file.onload = d => {
-            data = d
-            columns = d.columns
-            console.log({columns}, `type ${typeof columns}`)
-
-            chartFS.show()
-            dsFS.show()
-            chartType.selected = 'line'
-            xaColumn.destroy()
-            xaColumn.addItems(columns)
-            series.destroy()
-            series.updateColumnValues(columns)
-            form.state = BaseForm.STATE_DATA_SOURCE
+        input.file.onload = d => {
+            ctx.loadData(d)
         }
 
         form.cancelBtn.onclick = e => {
@@ -217,20 +433,15 @@ export default class Widget extends BaseComponent {
             e.preventDefault()
             validateForm()
 
-            form.state = BaseForm.STATE_DATA_VALID
-            modal.hide()
+            form.state = FORM_STATE_DATA_VALID
+            modal.close()
 
-            const config = ctx.settingManager.get(ctx.id)
-            this.chartManager.loadSetting(config)
-
-            if (form.state === BaseForm.STATE_DATA_VALID) {
-                ctx.chartManager.render()
-            }
+            ctx.renderChart(form.state)
         }
 
         form.onStateChange = value => {
             switch (value) {
-                case BaseForm.STATE_DATA_SOURCE:
+                case FORM_STATE_DATA_SOURCE:
                     form.enableSubmitBtn()
                     break
 
@@ -240,9 +451,65 @@ export default class Widget extends BaseComponent {
         }
 
         // file.input.onchange = e => { console.log(`${e.target.id} -> onchange`) }
-        form.state = BaseForm.STATE_DATA_INPUT
+        form.state = FORM_STATE_DATA_INPUT
         ctx.modal = modal
 
         modal.show()
+    }
+
+    removeWidget() {
+        this.chartPanel.clear()
+        this.deleteConfig()
+
+        this.hideContent()
+        this.showControl()
+    }
+
+    renderChart(state) {
+        const config = this.openConfig()
+        this.chartPanel.load(config)
+
+        if (state === FORM_STATE_DATA_VALID) {
+            this.showContent()
+            this.hideControl()
+            this.chartPanel.render()
+        }
+    }
+
+    menuItemClick(e) {
+        const $target = e.currentTarget
+        const action = $target.dataset.action
+        const type = $target.dataset.type
+
+        if (type === 'item') {
+            switch (action) {
+                case Dropdown.MENU_ITEM_EDIT:
+                    console.log({action})
+
+                    break
+                case Dropdown.MENU_ITEM_REMOVE:
+                    this.removeWidget()
+
+                    break
+                default:
+                    throw new Error(`InvalidAction: ${action} not supported.`)
+            }
+        }
+    }
+
+    hideContent() {
+        this.$content.classList.add('hidden')
+    }
+
+    showContent() {
+        this.$content.classList.remove('hidden')
+    }
+
+    hideControl() {
+        this.$control.classList.add('hidden')
+    }
+
+    showControl() {
+        this.$control.classList.remove('hidden')
     }
 }
