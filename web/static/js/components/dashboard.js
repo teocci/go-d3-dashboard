@@ -32,7 +32,7 @@ export default class Dashboard extends BaseComponent {
         }
 
         this.dom = $dashboard
-        if (!isNull(this.holder)) this.holder.appendChild($dashboard)
+        if (!isNil(this.holder)) this.holder.appendChild($dashboard)
     }
 
     initListeners() {

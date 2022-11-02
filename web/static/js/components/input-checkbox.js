@@ -28,7 +28,7 @@ export default class InputCheckbox extends BaseInput {
     initElement() {
         const options = this.options
         const input = this.input
-        if (!isNull(options.checked)) input.checked = options.checked
-        if (!isNull(options.indeterminate)) input.indeterminate = options.indeterminate
+        if (!isNil(options.checked)) input.checked = options.checked
+        if (!isNil(options.indeterminate)) input.indeterminate = options.indeterminate
     }
 }

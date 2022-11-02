@@ -12,6 +12,18 @@ import Actions from './actions.js'
 export default class Series extends BaseComponent {
     static TAG = 'series'
 
+    /**
+     * Row of fields
+     * @type {Map<string, Object>}
+     */
+    series
+
+    /**
+     * Columns of attributes extracted from options
+     * @type {Map<string, Object>}
+     */
+    attributes
+
     constructor(element, options) {
         super(element)
 
@@ -53,7 +65,7 @@ export default class Series extends BaseComponent {
         field.classList.add('series')
 
         this.dom = field
-        if (!isNull(this.holder)) this.holder.append(field)
+        if (!isNil(this.holder)) this.holder.append(field)
     }
 
     createEmptyTable() {
@@ -119,8 +131,7 @@ export default class Series extends BaseComponent {
         if (this.series.size === 10) return
 
         const row = {}
-        const event = Date.now()
-        const hash = hash53(event.toString())
+        const hash = hashID()
         row.id = hash
         const tr = document.createElement('tr')
         tr.id = hash
@@ -136,13 +147,15 @@ export default class Series extends BaseComponent {
         this.series.set(hash, row)
 
         this.table.appendChild(tr)
+        this.updateFirstLast()
     }
 
     removeRow(hash) {
         if (this.series.size === 1) return
-        const tr = document.getElementById(hash)
-        tr.remove()
+
+        document.getElementById(hash).remove()
         this.series.delete(hash)
+        this.updateFirstLast()
     }
 
     onActionClicked(e) {
@@ -176,8 +189,22 @@ export default class Series extends BaseComponent {
         this.addEmptyRow()
     }
 
+    updateFirstLast() {
+        if (this.series.size < 1) return
+
+        const keys = [...this.series.keys()]
+        keys.forEach((hash, index) => {
+            const $row = document.getElementById(hash)
+            if (!$row) return
+
+            $row.classList.remove('first', 'last')
+            if (index === 0) $row.classList.add('first')
+            if (index === keys.length - 1) $row.classList.add('last')
+        })
+    }
+
     destroy() {
-        this.series = new Map()
+        this.series.clear()
         this.destroyChildren(this.table)
     }
 }

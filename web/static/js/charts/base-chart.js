@@ -86,12 +86,12 @@ export default class BaseChart {
     parseData(config) {
         console.log({config})
         const data = config.data
-        if (isNull(data)) return null
+        if (isNil(data)) return null
 
         const x = config.source.axis?.x ?? null
         const y = config.source.axis?.y ?? null
         const series = config.source?.series ?? null
-        if (isNull(x) && isNull(y) && isNull(series)) return null
+        if (isNil(x) && isNil(y) && isNil(series)) return null
 
         // const xKey = x.column
         // const data = config.data.map(item => {
@@ -108,14 +108,14 @@ export default class BaseChart {
             datasets,
         }
 
-        if (!isNull(y)) {
+        if (!isNil(y)) {
             const item = this.parseDataset(x, y, data)
             datasets.push(item)
 
             return result
         }
 
-        if (!isNull(series)) {
+        if (!isNil(series)) {
             for (const raw of series) {
                 const item = this.parseDataset(x, raw, data)
                 datasets.push(item)
@@ -153,7 +153,7 @@ export default class BaseChart {
             color: DEFAULT_TICK_COLOR,
             font,
         }
-        if (isNull(axis)) return {
+        if (isNil(axis)) return {
             grid,
             ticks,
         }
@@ -235,7 +235,7 @@ export default class BaseChart {
     }
 
     init(config) {
-        if (isNull(config)) throw new Error('InvalidParameter: null config')
+        if (isNil(config)) throw new Error('InvalidParameter: null config')
 
         const type = config.chart.type
         const data = this.parseData(config)

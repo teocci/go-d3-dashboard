@@ -34,7 +34,7 @@ export default class Actions extends BaseComponent {
     }
 
     set onClick(f) {
-        if (isNull(f)) throw new Error('InvalidParameter: f is null')
+        if (isNil(f)) throw new Error('InvalidParameter: f is null')
         if (!isFunction(f)) throw new Error('InvalidParameter: f is not a function')
 
         for (const action of this.actions.values()) {
@@ -47,7 +47,7 @@ export default class Actions extends BaseComponent {
         field.classList.add('actions')
 
         this.dom = field
-        if (!isNull(this.holder)) this.holder.append(field)
+        if (!isNil(this.holder)) this.holder.append(field)
     }
 
     addActions() {

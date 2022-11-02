@@ -35,10 +35,10 @@ export default class InputNumber extends BaseInput {
         const input = this.input
         input.requiered = options.requiered
         if (options.placeholder) input.placeholder = options.placeholder
-        if (options.step) input.step = options.step
-        if (options.min) input.min = options.min
-        if (options.max) input.max = options.max
-        if (options.size) input.size = options.size
-        if (options.list) input.list = options.list
+        if (isNumber(options.step)) input.step = options.step
+        if (isNumber(options.min)) input.min = options.min
+        if (isNumber(options.max)) input.max = options.max
+        if (isNumber(options.size)) input.size = options.size
+        if (isNumber(options.list)) input.list = options.list
     }
 }

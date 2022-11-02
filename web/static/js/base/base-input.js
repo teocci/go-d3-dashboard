@@ -6,7 +6,9 @@ import BaseComponent from './base-component.js'
 
 export default class BaseInput extends BaseComponent {
     static DEFAULT_INPUT_OPTIONS = {
+        type: undefined,
         id: undefined,
+        classes: undefined,
         label: undefined,
         name: undefined,
         value: undefined,
@@ -32,13 +34,13 @@ export default class BaseInput extends BaseComponent {
 
     get value() {
         const input = this.input
-        if (isNull(input)) throw new Error('InvalidAttribute: input is null')
+        if (isNil(input)) throw new Error('InvalidAttribute: input is null')
         return input.value
     }
 
     set value(v) {
         const input = this.input
-        if (isNull(input)) throw new Error('InvalidAttribute: input is null')
+        if (isNil(input)) throw new Error('InvalidAttribute: input is null')
         input.value = v
 
         const event = new Event('change')
@@ -53,17 +55,17 @@ export default class BaseInput extends BaseComponent {
 
         const label = document.createElement('label')
         label.classList.add('label')
-        if (!isNull(options.id)) label.htmlFor = options.id
-        if (!isNull(options.label)) label.textContent = options.label
+        if (!isNil(options.id)) label.htmlFor = options.id
+        if (!isNil(options.label)) label.textContent = options.label
         if (!options.showLabel) label.classList.add('hidden')
 
         const input = document.createElement('input')
         input.type = options.type
 
-        if (!isNull(options.id)) input.id = options.id
-        if (!isNull(options.name)) input.name = options.name
-        if (!isNull(options.value)) input.value = options.value
-        if (!isNull(options.required)) input.required = options.required
+        if (!isNil(options.id)) input.id = options.id
+        if (!isNil(options.name)) input.name = options.name
+        if (!isNil(options.value)) input.value = options.value
+        if (!isNil(options.required)) input.required = options.required
 
         if (options.labelFirst) field.append(label, input)
         else {
@@ -75,7 +77,14 @@ export default class BaseInput extends BaseComponent {
         this.input = input
 
         this.dom = field
-        if (!isNull(this.holder)) this.holder.appendChild(field)
+        if (!isNil(this.holder)) this.holder.appendChild(field)
+    }
+
+    loadClasses() {
+        const classes = this.options.classes
+        if (!isArray(classes)) return
+
+        this.addClass(...classes)
     }
 
     enable() {

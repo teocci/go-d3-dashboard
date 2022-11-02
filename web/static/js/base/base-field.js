@@ -11,7 +11,7 @@ export default class BaseField extends BaseComponent {
         const oldOptions = this.defaultOptions
         this.options = merger(true, oldOptions, options)
 
-        if (this.options && !isNull(this.options.inputs) && this.options.inputs.length > 0) {
+        if (this.options && !isNil(this.options.inputs) && this.options.inputs.length > 0) {
             const inputs = []
             for (const raw of this.options.inputs) {
                 const input = simpleMerge(BaseField.DEFAULT_INPUT_OPTIONS, raw)
@@ -26,5 +26,12 @@ export default class BaseField extends BaseComponent {
 
     get defaultOptions() {
         return cloner(this.constructor.DEFAULT_OPTIONS)
+    }
+
+    loadClasses() {
+        const classes = this.options.classes
+        if (!isArray(classes)) return
+
+        this.addClass(...classes)
     }
 }

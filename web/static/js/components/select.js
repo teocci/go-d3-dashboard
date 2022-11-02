@@ -6,6 +6,7 @@ import BaseComponent from '../base/base-component.js'
 
 export default class Select extends BaseComponent {
     static TAG = 'select'
+
     static DEFAULT_ITEM_OPTIONS = {
         value: undefined,
         label: undefined,
@@ -15,6 +16,7 @@ export default class Select extends BaseComponent {
     static DEFAULT_OPTIONS = {
         type: Select.TAG,
         id: undefined,
+        classes: undefined,
         legend: undefined,
         name: `${Select.TAG}-name`,
         disabled: undefined,
@@ -25,22 +27,19 @@ export default class Select extends BaseComponent {
         items: [],
     }
 
+    /**
+     * HTML Elements
+     *
+     * @type {Map<string, Object>}
+     */
+    items
+
     constructor(element, options) {
         super(element)
 
         this.items = new Map()
 
-        this.options =  merger(true, this.constructor.DEFAULT_OPTIONS, options)
-        if (this.options && !isNull(this.options.items) && this.options.items.length > 0) {
-            const items = []
-            for (const raw of this.options.items) {
-                const input = simpleMerge(Select.DEFAULT_ITEM_OPTIONS, raw)
-                input.label = input.label ?? this.tag
-                items.push(input)
-            }
-            this.options.items = [...items]
-        }
-
+        this.loadOptions(options)
         this.initElement()
     }
 
@@ -54,7 +53,7 @@ export default class Select extends BaseComponent {
 
     set selected(v) {
         const input = this.input
-        if (isNull(input)) throw new Error('InvalidAttribute: input is null')
+        if (isNil(input)) throw new Error('InvalidAttribute: input is null')
 
         const event = new Event('change')
         input.value = v
@@ -63,9 +62,25 @@ export default class Select extends BaseComponent {
 
     get selected() {
         const input = this.input
-        if (isNull(input)) throw new Error('InvalidAttribute: input is null')
+        if (isNil(input)) throw new Error('InvalidAttribute: input is null')
 
         return input.value
+    }
+
+    loadOptions(options) {
+        const base = this.constructor.DEFAULT_OPTIONS
+        const merged = simpleMerge(cloner(base), options)
+        this.options = merged
+
+        if (isNil(merged) || isEmptyArray(merged.items)) return
+
+        const items = []
+        for (const raw of merged.items) {
+            const input = simpleMerge(Select.DEFAULT_ITEM_OPTIONS, raw)
+            input.label = input.label ?? this.tag
+            items.push(input)
+        }
+        merged.items = [...items]
     }
 
     initElement() {
@@ -76,17 +91,17 @@ export default class Select extends BaseComponent {
 
         const label = document.createElement('label')
         label.classList.add('label')
-        if (!isNull(options.id)) label.htmlFor = options.id
-        if (!isNull(options.legend)) label.textContent = options.legend
+        if (!isNil(options.id)) label.htmlFor = options.id
+        if (!isNil(options.legend)) label.textContent = options.legend
         if (!options.showLabel) label.classList.add('hidden')
 
         const select = document.createElement('select')
-        if (!isNull(options.id)) select.id = options.id
-        if (!isNull(options.name)) select.name = options.name
-        if (!isNull(options.disabled)) select.disabled = options.disabled
-        if (!isNull(options.required)) select.required = options.required
-        if (!isNull(options.multiple)) select.multiple = options.multiple
-        if (!isNull(options.size)) select.size = options.size
+        if (!isNil(options.id)) select.id = options.id
+        if (!isNil(options.name)) select.name = options.name
+        if (!isNil(options.disabled)) select.disabled = options.disabled
+        if (!isNil(options.required)) select.required = options.required
+        if (!isNil(options.multiple)) select.multiple = options.multiple
+        if (!isNil(options.size)) select.size = options.size
 
         options.items.forEach((item, idx) => {
             const option = this.createOption(item)
@@ -103,21 +118,21 @@ export default class Select extends BaseComponent {
         this.input = select
 
         this.dom = field
-        if (!isNull(this.holder)) this.holder.append(field)
+        if (!isNil(this.holder)) this.holder.append(field)
     }
 
     createOption(item) {
         const option = document.createElement('option')
-        if (!isNull(item.value)) option.value = item.value
-        if (!isNull(item.label)) option.textContent = item.label
-        if (!isNull(item.selected)) option.selected = item.selected
+        if (!isNil(item.value)) option.value = item.value
+        if (!isNil(item.label)) option.textContent = item.label
+        if (!isNil(item.selected)) option.selected = item.selected
 
         return option
     }
 
     addItems(values) {
         const name = this.options.name
-        if (isNull(values)) throw Error('Invalid Parameter: null values')
+        if (isNil(values)) throw Error('Invalid Parameter: null values')
         if (values.length === 0) throw Error('Invalid Parameter: empty values')
 
         values.forEach((value, idx) => {
@@ -126,13 +141,20 @@ export default class Select extends BaseComponent {
                 label: toPascalCase(value),
                 selected: idx === 0 ?? undefined,
             }
-            const option = this.createOption(item)
+            const $option = this.createOption(item)
 
             const id = value ?? `${name}-${idx}`
-            this.items.set(id, option)
+            this.items.set(id, $option)
 
-            this.input.appendChild(option)
+            this.input.appendChild($option)
         })
+    }
+
+    loadClasses() {
+        const classes = this.options.classes
+        if (!isArray(classes)) return
+
+        this.addClass(...classes)
     }
 
     enable() {
@@ -148,7 +170,7 @@ export default class Select extends BaseComponent {
     }
 
     destroy() {
-        this.items = new Map()
         this.destroyChildren(this.input)
+        this.items.clear()
     }
 }

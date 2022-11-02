@@ -8,13 +8,18 @@ let settings
 
 const DEFAULT_STRUCTURE_SETTINGS = {
     fieldset: {
+        type: 'fieldset',
         legend: '차트 설정',
+        classes: ['setting'],
     },
     input: {
         fieldset: {
+            type: 'fieldset',
             legend: '데이터 투입',
+            classes: ['data-input'],
         },
         mode: {
+            type: 'radios',
             legend: '타입',
             group: 'di-type',
             useFieldset: false,
@@ -34,6 +39,7 @@ const DEFAULT_STRUCTURE_SETTINGS = {
             ],
         },
         file: {
+            type: 'file',
             id: 'di-file',
             label: '파일',
             text: '파일 선택',
@@ -43,15 +49,19 @@ const DEFAULT_STRUCTURE_SETTINGS = {
             ],
         },
         connect: {
+            type: 'text',
             id: 'di-connection',
             label: 'Connection',
         },
     },
     chart: {
         fieldset: {
-            legend: '차트',
+            type: 'fieldset',
+            legend: '데이터 차트',
+            classes: ['data-chart'],
         },
         type: {
+            type: 'select',
             id: 'chart-type',
             legend: '타입',
             items: [
@@ -75,6 +85,7 @@ const DEFAULT_STRUCTURE_SETTINGS = {
             ],
         },
         title: {
+            type: 'text',
             id: 'chart-title',
             label: '제목',
             placeholder: '차트 제목 입력',
@@ -83,30 +94,38 @@ const DEFAULT_STRUCTURE_SETTINGS = {
     },
     source: {
         fieldset: {
+            type: 'fieldset',
             legend: '데이터 소스',
+            classes: ['data-source'],
         },
     },
 }
 
 const DEFAULT_AXIS = {
     fieldset: {
+        type: 'fieldset',
         legend: '축',
+        classes: ['axis'],
     },
     label: {
+        type: 'text',
         id: 'axis-label',
         label: '레이블',
         placeholder: '축 레이블 입력',
     },
     unit: {
+        type: 'text',
         id: 'axis-unit',
         label: '단위',
     },
     column: {
+        type: 'select',
         id: 'axis-column',
         legend: '컬럼',
         items: [],
     },
     scale: {
+        type: 'radios',
         legend: '스케일 타입',
         group: 'axis-scale-type',
         useFieldset: false,
@@ -133,32 +152,93 @@ const DEFAULT_AXIS = {
     },
 }
 
+const EXTEND_SCATTER_AXIS = {
+    radius: {
+        type: 'number',
+        id: 'axis-radius',
+        label: '반지름',
+        value: 2,
+        step: .5,
+        min: 0,
+        max: 10,
+        size: 3,
+    },
+    'border-width': {
+        type: 'number',
+        id: 'axis-border-width',
+        label: '너비',
+        value: 2,
+        step: .5,
+        min: 0,
+        max: 10,
+        size: 3,
+    },
+    'border-color': {
+        type: 'color',
+        id: 'axis-border-color',
+        label: '색상',
+    },
+}
+
+const EXTEND_BUBBLE_RADIUS = {
+    borderWidth: {
+        type: 'number',
+        id: 'axis-border-width',
+        label: '너비',
+        value: 2,
+        step: .5,
+        min: 0,
+        max: 10,
+        size: 3,
+    },
+    borderColor: {
+        type: 'color',
+        id: 'axis-border-color',
+        label: '색상',
+    },
+    backgroundColor: {
+        type: 'color',
+        id: 'axis-background-color',
+        label: '배경색',
+    },
+    backgroundOpacity: {
+        type: 'number',
+        id: 'axis-background-opacity',
+        label: '투명도',
+        value: 1,
+        step: .1,
+        min: 0,
+        max: 1,
+        size: 2,
+    },
+}
+
 const DEFAULT_LINE_ATTRIBUTES = [
     {
+        type: 'text',
         id: 'label',
         label: '레이블',
-        type: 'text',
         options: {},
     },
     {
+        type: 'text',
         id: 'unit',
         label: '단위',
-        type: 'text',
         options: {
             maxLength: 5,
             size: 5,
         },
     },
     {
+        type: 'select',
         id: 'column',
         label: '컬럼',
-        type: 'select',
         options: {},
     },
     {
+        type: 'select',
         id: 'scale',
         label: '스케일',
-        type: 'select',
         options: {
             items: [
                 {
@@ -178,9 +258,9 @@ const DEFAULT_LINE_ATTRIBUTES = [
         },
     },
     {
+        type: 'select',
         id: 'curve',
         label: '커브 타입',
-        type: 'select',
         options: {
             items: [
                 {
@@ -200,9 +280,91 @@ const DEFAULT_LINE_ATTRIBUTES = [
         },
     },
     {
+        type: 'number',
         id: 'width',
         label: '선 길이',
+        options: {
+            value: 2,
+            step: .5,
+            min: 0,
+            max: 10,
+            size: 3,
+        },
+    },
+    {
         type: 'number',
+        id: 'opacity',
+        label: '투명도',
+        options: {
+            value: 1,
+            step: .1,
+            min: 0,
+            max: 1,
+            size: 2,
+        },
+    },
+    {
+        type: 'color',
+        id: 'color',
+        label: '색상',
+        options: {},
+    },
+    {
+        type: 'actions',
+        id: 'actions',
+        label: '동작',
+        options: {},
+    },
+]
+
+const DEFAULT_BAR_ATTRIBUTES = [
+    {
+        type: 'text',
+        id: 'label',
+        label: '레이블',
+        options: {},
+    },
+    {
+        type: 'text',
+        id: 'unit',
+        label: '단위',
+        options: {
+            maxLength: 5,
+            size: 5,
+        },
+    },
+    {
+        type: 'select',
+        id: 'column',
+        label: '컬럼',
+        options: {},
+    },
+    {
+        type: 'select',
+        id: 'scale',
+        label: '스케일',
+        options: {
+            items: [
+                {
+                    label: '선형',
+                    value: 'linear',
+                    selected: true,
+                },
+                {
+                    label: '시계열',
+                    value: 'time',
+                },
+                {
+                    label: '로그',
+                    value: 'log',
+                },
+            ],
+        },
+    },
+    {
+        type: 'number',
+        id: 'width',
+        label: '테두리 너비',
         options: {
             value: 2,
             step: .5,
@@ -212,9 +374,21 @@ const DEFAULT_LINE_ATTRIBUTES = [
         },
     },
     {
-        id: 'opacity',
-        label: '투명도',
+        type: 'color',
+        id: 'color',
+        label: '테두리 색상',
+        options: {},
+    },
+    {
+        type: 'color',
+        id: 'background',
+        label: '배경색',
+        options: {},
+    },
+    {
         type: 'number',
+        id: 'opacity',
+        label: '배경 불투명도',
         options: {
             value: 1,
             step: .1,
@@ -224,15 +398,9 @@ const DEFAULT_LINE_ATTRIBUTES = [
         },
     },
     {
-        id: 'color',
-        label: '색상',
-        type: 'color',
-        options: {},
-    },
-    {
+        type: 'actions',
         id: 'actions',
         label: '동작',
-        type: 'actions',
         options: {},
     },
 ]
@@ -375,66 +543,6 @@ const RF_X_AXIS_SCALE_TYPE = {
 const FS_SERIES = {
     legend: 'Series',
 }
-
-const DEFAULT_BAR_ATTRIBUTES = [
-    {
-        id: 'label',
-        label: '레이블',
-        type: 'text',
-        options: {},
-    },
-    {
-        id: 'unit',
-        label: '단위',
-        type: 'text',
-        options: {
-            maxLength: 5,
-            size: 5,
-        },
-    },
-    {
-        id: 'column',
-        label: '컬럼',
-        type: 'select',
-        options: {},
-    },
-    {
-        id: 'width',
-        label: '선 길이',
-        type: 'number',
-        options: {
-            value: 1,
-            step: .5,
-            min: '0',
-            max: 10,
-            size: 3,
-        },
-    },
-    {
-        id: 'opacity',
-        label: '투명도',
-        type: 'number',
-        options: {
-            value: 1,
-            step: .1,
-            min: '0',
-            max: 1,
-            size: 2,
-        },
-    },
-    {
-        id: 'color',
-        label: '색상',
-        type: 'color',
-        options: {},
-    },
-    {
-        id: 'actions',
-        label: '동작',
-        type: 'actions',
-        options: {},
-    },
-]
 
 const TEST_FIELDS = {
     fieldset: {

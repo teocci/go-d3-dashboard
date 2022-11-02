@@ -34,11 +34,11 @@ export default class InputFile extends BaseInput {
         const options = this.options
 
         const btn = document.createElement('label')
-        if (!isNull(options.id)) btn.htmlFor = options.id
+        if (!isNil(options.id)) btn.htmlFor = options.id
         btn.classList.add(`${this.tag}-btn`)
 
         const span = document.createElement('span')
-        if (!isNull(options.id)) span.textContent = options.text ?? 'Select File'
+        if (!isNil(options.id)) span.textContent = options.text ?? 'Select File'
 
         btn.appendChild(span)
 
@@ -88,7 +88,7 @@ export default class InputFile extends BaseInput {
             const item = {}
             let allNull = true
             for (const s of raw.columns) {
-                allNull &= isNull(row[s])
+                allNull &= isNil(row[s])
                 item[columns.get(s)] = row[s]
             }
             if (!allNull) data.push(item)

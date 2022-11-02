@@ -64,7 +64,7 @@ export default class BaseForm extends BaseComponent {
         this.content = content
 
         this.dom = form
-        if (!isNull(this.holder)) this.holder.append(form)
+        if (!isNil(this.holder)) this.holder.append(form)
     }
 
     createField(options) {

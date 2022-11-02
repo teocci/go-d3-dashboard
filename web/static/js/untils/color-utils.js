@@ -7,7 +7,7 @@ import Color from './color/color.js'
 
 export default class ColorUtils {
     static transparentize(value, opacity) {
-        const alpha = isNull(opacity) ? 0.5 : opacity
+        const alpha = isNil(opacity) ? 0.5 : opacity
         return new Color(value).alpha(alpha).rgbString()
     }
 }

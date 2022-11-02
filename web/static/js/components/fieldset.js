@@ -11,9 +11,17 @@ export default class Fieldset extends BaseField {
         type: Fieldset.TAG,
         legend: undefined,
         group: `${Fieldset.TAG}-group`,
+        classes: undefined,
         useFieldset: true,
         showLegend: true,
     }
+
+    /**
+     * HTML Elements
+     *
+     * @type {Map<string, Object|InputRadio|InputCheckbox>}
+     */
+    fields
 
     constructor(element, options) {
         super(element, options)
@@ -23,6 +31,7 @@ export default class Fieldset extends BaseField {
         this.content = null
 
         this.initField()
+        this.loadClasses()
     }
 
     get defaultOptions() {
@@ -39,7 +48,7 @@ export default class Fieldset extends BaseField {
 
         this.content = $content
         this.dom = $fieldset
-        if (!isNull(this.holder)) this.holder.appendChild($fieldset)
+        if (!isNil(this.holder)) this.holder.appendChild($fieldset)
     }
 
     createElement(useFieldset) {
@@ -52,14 +61,14 @@ export default class Fieldset extends BaseField {
             $legend = document.createElement('legend')
             $legend.classList.add('legend')
 
-            if (!isNull(options.legend)) $legend.textContent = this.options.legend
+            if (!isNil(options.legend)) $legend.textContent = this.options.legend
         } else {
             $element = document.createElement('div')
             $element.classList.add('fieldset', 'inline', options.group)
             $legend = document.createElement('div')
             $legend.classList.add('fieldset-legend', 'label')
 
-            if (!isNull(options.legend)) $legend.textContent = this.options.legend
+            if (!isNil(options.legend)) $legend.textContent = this.options.legend
         }
         $element.appendChild($legend)
 
@@ -68,13 +77,13 @@ export default class Fieldset extends BaseField {
 
     addField(...fields) {
         const group = this.options.group
-        if (isNull(fields)) throw Error('Invalid fields : null fields')
+        if (isNil(fields)) throw Error('Invalid fields : null fields')
         if (fields.length === 0) throw Error('Invalid fields : empty fields')
 
-        fields.forEach((field, idx) => {
-            const id = field.id ?? `${group}-${idx}`
-            this.fields.set(id, field)
-            this.content.appendChild(field)
+        fields.forEach(($field, idx) => {
+            const id = $field.id ?? `${group}-${idx}`
+            this.fields.set(id, $field)
+            this.content.appendChild($field)
         })
     }
 

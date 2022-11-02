@@ -6,12 +6,13 @@ import Fieldset from './fieldset.js'
 import InputRadio from './input-radio.js'
 
 export default class FieldsetRadio extends Fieldset {
-    static TAG = 'radio'
+    static TAG = 'radios'
 
     static DEFAULT_OPTIONS = {
         type: FieldsetRadio.TAG,
         legend: undefined,
         group: `${FieldsetRadio.TAG}-group`,
+        classes: undefined,
         inputs: [],
         useFieldset: true,
         showLegend: true,
@@ -23,27 +24,6 @@ export default class FieldsetRadio extends Fieldset {
         this.initElement()
     }
 
-    initElement() {
-        const content = this.content
-        const inputs = this.options.inputs
-        const group = this.options.group
-        if (!isNull(inputs) && inputs.length > 0) {
-            inputs.forEach((input, idx) => {
-                const field = new InputRadio(content, input)
-                const id = input.id ?? `${group}-${idx}`
-                this.fields.set(id, field)
-            })
-        }
-    }
-
-    fieldById(id) {
-        for (const field of this.fields.values()) {
-            if (field.input.id === id) return field
-        }
-
-        return null
-    }
-
     set value(v) {
         this.checked = v
     }
@@ -52,8 +32,14 @@ export default class FieldsetRadio extends Fieldset {
         return this.checked
     }
 
+    /**
+     * Returns the checked field
+     *
+     * @return {InputRadio|null}
+     */
     get checkedField() {
-        for (const field of this.fields.values()) {
+        const fields = this.fields.values()
+        for (const field of fields) {
             if (field.input.checked) return field
         }
 
@@ -63,14 +49,14 @@ export default class FieldsetRadio extends Fieldset {
     /**
      * Checks the radio input by id
      *
-     * @param id
+     * @param {string} id
      */
     set checked(id) {
         const field = this.fieldById(id)
-        if (isNull(field)) throw new Error('InvalidParameter: null field')
+        if (isNil(field)) throw new Error('InvalidParameter: null field')
 
-        field.input.checked = true
         const event = new Event('change')
+        field.input.checked = true
         field.input.dispatchEvent(event)
     }
 
@@ -81,5 +67,32 @@ export default class FieldsetRadio extends Fieldset {
      */
     get checked() {
         return this.checkedField.value
+    }
+
+    initElement() {
+        const content = this.content
+        const inputs = this.options.inputs
+        if (isNil(inputs) || inputs.length < 1) return
+
+        const group = this.options.group
+        inputs.forEach((input, idx) => {
+            const field = new InputRadio(content, input)
+            const id = input.id ?? `${group}-${idx}`
+            this.fields.set(id, field)
+        })
+    }
+
+    /**
+     * Returns a field by ID
+     * @param {string} id
+     * @return {null|InputRadio}
+     */
+    fieldById(id) {
+        const fields = this.fields.values()
+        for (const field of fields) {
+            if (field.input.id === id) return field
+        }
+
+        return null
     }
 }

@@ -37,7 +37,7 @@ const hsl2rgbn = (h, s, l) => {
  * @param {number} h - hue [0..360]
  * @param {number} s - saturation [0..1]
  * @param {number} v - value [0..1]
- * @returns {number[]} - [r, g, b] each normalized to [0..1]
+ * @returns {number[3]} - [r, g, b] each normalized to [0..1]
  * @hidden
  */
 const hsv2rgbn = (h, s, v) => {
@@ -54,7 +54,7 @@ const hsv2rgbn = (h, s, v) => {
  * @param {number} h - hue [0..360]
  * @param {number} w - whiteness [0..1]
  * @param {number} b - blackness [0..1]
- * @returns {number[]} - [r, g, b] each normalized to [0..1]
+ * @returns {number[3]} - [r, g, b] each normalized to [0..1]
  * @hidden
  */
 const hwb2rgbn = (h, w, b) => {

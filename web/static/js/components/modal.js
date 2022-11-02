@@ -61,7 +61,7 @@ export default class Modal extends Draggable {
         $section.append($header, $content)
         $modal.appendChild($section)
         this.dom = $modal
-        if (!isNull(this.holder)) this.holder.append($modal, $trigger)
+        if (!isNil(this.holder)) this.holder.append($modal, $trigger)
     }
 
     close(e) {

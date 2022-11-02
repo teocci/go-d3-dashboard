@@ -1,0 +1,68 @@
+/**
+ * Created by RTT.
+ * Author: teocci@yandex.com on 2022-11월-02
+ */
+
+.series table {
+    width: 100%;
+}
+
+.series th {
+    font-size: 1rem;
+    text-align: left;
+}
+
+.series td {
+    white-space: nowrap
+}
+
+.series td .field input:not([type='number']),
+.series td .field select {
+    width: 100%;
+}
+
+.field input[type='number'] {
+    max-width: 3rem;
+}
+
+.series td .field input[type='color'] {
+    width: 3rem;
+}
+.series td .field select {
+    min-width: 5rem;
+}
+
+.series .actions {
+    display: flex;
+    flex-flow: row nowrap;
+    min-width: 4rem;
+    width: 100%;
+}
+
+.series .actions .action {
+    margin-right: .5rem;
+    cursor: pointer;
+    user-select: none;
+    color: var(--main-color);
+    transition: ease 0.2s, color;
+}
+
+.series .actions .action:hover {
+    color: var(--main-contrast-color);
+}
+
+.series .actions .action:has(.fa-square-plus) {
+    display: none;
+}
+
+.series tr:only-child .actions .action:has(.fa-square-minus) {
+    display: none;
+}
+
+.series tr:last-child .actions .action:has(.fa-square-plus) {
+    display: block;
+}
+
+.series tr:nth-child(n+10) .actions .action:has(.fa-square-plus) {
+    display: none;
+}

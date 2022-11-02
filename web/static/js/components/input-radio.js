@@ -27,6 +27,6 @@ export default class InputRadio extends BaseInput {
     initElement() {
         const options = this.options
         const input = this.input
-        if (!isNull(options.checked)) input.checked = options.checked
+        if (!isNil(options.checked)) input.checked = options.checked
     }
 }

@@ -15,6 +15,9 @@ import ChartSettingManager from '../managers/chart-setting-manager.js'
 import ObservableObject from '../base/observable-object.js'
 import ChartPanel from './chart-panel.js'
 import Dropdown from './dropdown.js'
+import InputNumber from './input-number.js'
+import InputColor from './input-color.js'
+import FieldsetCheckbox from './fieldset-checkbox.js'
 
 const FORM_STATE_INIT = BaseForm.STATE_INIT
 const FORM_STATE_DATA_INPUT = BaseForm.STATE_DATA_INPUT
@@ -43,18 +46,6 @@ export default class Widget extends BaseComponent {
         this.initListeners()
     }
 
-    openConfig() {
-        return this.settingManager.get(this.id)
-    }
-
-    saveConfig(config) {
-        this.settingManager.add(this.id, config)
-    }
-
-    deleteConfig() {
-        this.settingManager.delete(this.id)
-    }
-
     initWidget() {
         const $widget = document.createElement('div')
         $widget.classList.add('widget-holder')
@@ -78,7 +69,7 @@ export default class Widget extends BaseComponent {
         this.$button = $btn
 
         this.dom = $widget
-        if (!isNull(this.holder)) this.holder.append($widget)
+        if (!isNil(this.holder)) this.holder.append($widget)
     }
 
     initListeners() {
@@ -145,22 +136,65 @@ export default class Widget extends BaseComponent {
         }
     }
 
-    initAxis(id) {
-        const options = cloner(DEFAULT_AXIS)
-        options.label.id = `${id}-${options.label.id}`
-        options.unit.id = `${id}-${options.unit.id}`
-        options.column.id = `${id}-${options.column.id}`
-        options.scale.group = `${id}-${options.scale.group}`
+    initAxisIds(id, options) {
+        const ID = id.toUpperCase()
+        for (const key in options) {
+            const option = options[key]
+            switch (option.type) {
+                case 'fieldset':
+                    option.legend = `${ID}${option.legend}`
 
-        for (const i in options.scale.inputs) {
-            options.scale.inputs[i].id = `${id}-${options.scale.inputs[i].id}`
+                    break
+                case 'radios':
+                case 'checkboxes':
+                    option.group = `${id}-${option.group}`
+                    for (const i in option.inputs) {
+                        option.inputs[i].id = `${id}-${option.inputs[i].id}`
+                    }
+
+                    break
+                default:
+                    if (!isNil(option.id)) option.id = `${id}-${option.id}`
+                    if (key === 'label') option.placeholder = `${ID}${option.placeholder}`
+            }
         }
 
-        const ID = id.toUpperCase()
-        options.fieldset.legend = `${ID}${options.fieldset.legend}`
-        options.label.placeholder = `${ID}${options.label.placeholder}`
-
         return options
+    }
+
+    createField(options, $holder) {
+        const type = options.type ?? null
+        $holder = $holder ?? null
+
+        let field = null
+        switch (type) {
+            case InputText.TAG:
+                field = new InputText($holder, options)
+                break
+            case InputNumber.TAG:
+                field = new InputNumber($holder, options)
+                break
+            case Select.TAG:
+                field = new Select($holder, options)
+                break
+            case InputColor.TAG:
+                field = new InputColor($holder, options)
+                break
+            case Fieldset.TAG:
+                field = new Fieldset($holder, options)
+                break
+            case FieldsetRadio.TAG:
+                field = new FieldsetRadio($holder, options)
+                break
+            case FieldsetCheckbox.TAG:
+                field = new FieldsetCheckbox($holder, options)
+                break
+            default:
+                throw new Error(`InvalidType: type ${type} not supported`)
+        }
+
+        return field
+
     }
 
     createDataInputSection() {
@@ -199,7 +233,7 @@ export default class Widget extends BaseComponent {
     }
 
     createDataSourceSection() {
-        const options = this.structure.options.chart
+        const options = this.structure.options.source
 
         const $holder = this.structure.fieldset.content
         const fieldset = new Fieldset($holder, options.fieldset)
@@ -209,26 +243,26 @@ export default class Widget extends BaseComponent {
         source.fieldset = fieldset
     }
 
-    createAxisSection(id) {
-        const options = this.initAxis(id)
-        console.log({options})
+    createAxisSection(id, extend) {
+        const base = cloner(simpleMerge(DEFAULT_AXIS, extend))
+        const options = this.initAxisIds(id, base)
 
         const $holder = this.structure.source.fieldset.content
         const fieldset = new Fieldset($holder, options.fieldset)
-
-        const $content = fieldset.content
-        const label = new InputText($content, options.label)
-        const unit = new InputText($content, options.unit)
-        const column = new Select($content, options.column)
-        const scale = new FieldsetRadio($content, options.scale)
-
         this.structure.source.axis[id] = {
             fieldset,
-            label,
-            unit,
-            column,
-            scale,
         }
+
+        const axis = this.structure.source.axis[id]
+        const $content = fieldset.content
+        for (const key in options) {
+            if (key === Fieldset.TAG) continue
+
+            console.log(`key: ${key}`)
+            const option = options[key]
+            axis[key] = this.createField(option, $content)
+        }
+        console.log({axis})
     }
 
     createSeriesSection(options) {
@@ -243,16 +277,57 @@ export default class Widget extends BaseComponent {
         datasets.series = series
     }
 
-    updateColumns() {
+    extendAxisSection(id, extend) {
+        const options = this.initAxisIds(id, extend)
+        const axis = this.structure.source.axis[id]
+        const $content = axis.fieldset.content
+        for (const key in options) {
+            const option = options[key]
+            axis[key] = this.createField(option, $content)
+        }
+    }
+
+    updateMode(mode) {
+        const ctx = this
+        const input = ctx.structure.input
+        input.file.hide()
+        input.connect.hide()
+
+        const chart = this.structure.chart
+        chart.type.reset()
+
+        const datasets = this.structure.source.datasets
+        datasets.series?.destroy()
+
         const config = this.structure.config
-        const columns = config.columns
+        switch (mode) {
+            case 'file':
+                input.file.show()
+                chart.type.enable()
+                config.input.mode = mode
 
-        const source = this.structure.source
+                break
+            case 'realtime':
+                input.connect.show()
+                chart.type.disable()
+                config.input.mode = mode
+
+                break
+        }
+    }
+
+    updateColumns() {
+        const ctx = this
+
+        const source = ctx.structure.source
+        const columns = ctx.structure.config.columns
+
         const axis = source.axis
-
         for (const v of Object.values(axis)) {
-            v.column.destroy()
-            v.column.addItems(columns)
+            if (v?.column) {
+                v.column.destroy()
+                v.column.addItems(columns)
+            }
         }
 
         const series = source.datasets.series
@@ -266,24 +341,75 @@ export default class Widget extends BaseComponent {
         const ctx = this
         ctx.structure.source.fieldset.clear()
 
+        ctx.createAxisSection('x')
         switch (type) {
             case 'line':
-                ctx.createAxisSection('x')
                 ctx.createSeriesSection(LINE_SERIES)
                 break
             case 'bar':
-                ctx.createAxisSection('x')
                 ctx.createAxisSection('y')
                 break
             case 'bubble':
+                ctx.createAxisSection('y')
+                ctx.createAxisSection('r', EXTEND_BUBBLE_RADIUS)
                 break
             case 'scatter':
+                ctx.createAxisSection('y', EXTEND_SCATTER_AXIS)
                 break
             case 'contour':
                 break
         }
 
         ctx.updateColumns()
+    }
+
+    processConfig() {
+        const ctx = this
+
+        const form = ctx.structure.form
+        if (FORM_STATE_DATA_SOURCE > form.state) return {
+            valid: false,
+            error: new Error(`InvalidState: ${form.state}`),
+        }
+
+        const config = this.structure.config
+        const mode = this.structure.input.mode.value
+        const chart = this.structure.chart
+
+        config.input.mode = mode
+        config.chart.type = chart.type.selected
+        config.chart.title = chart.title.value
+
+        switch (mode) {
+            case 'file':
+                const x = this.structure.source.axis.x
+                config.source.axis.x.label = x.label.value
+                config.source.axis.x.unit = x.unit.value
+                config.source.axis.x.column = x.column.value
+                config.source.axis.x.scale = x.scale.value
+
+                switch (config.chart.type) {
+                    case 'line':
+                        const series = this.structure.source.datasets.series
+                        config.source.axis.y = null
+                        config.source.series = series.values
+                        break
+                    case 'bar':
+                        break
+                    case 'bubble':
+                        break
+                    case 'scatter':
+                        break
+                    case 'contour':
+                        break
+                }
+                break
+            case 'realtime':
+                break
+            default:
+        }
+
+        ctx.saveConfig(config)
     }
 
     loadData(d) {
@@ -308,16 +434,14 @@ export default class Widget extends BaseComponent {
 
     loadModal(e) {
         const ctx = this
-        ctx.initStructure()
-        ctx.structure.config = ctx.openConfig() ?? ctx.createConfig()
-        const config = ctx.structure.config
-        console.log({config})
 
         const modal = new Modal(this.$control)
         const $modal = modal.$content
 
         const form = new BaseForm($modal)
         const $form = form.content
+
+        ctx.initStructure()
 
         const options = ctx.structure.options
         const fieldset = new Fieldset($form, options.fieldset)
@@ -330,88 +454,31 @@ export default class Widget extends BaseComponent {
         ctx.createChartSection()
         ctx.createDataSourceSection()
 
+        ctx.hasConfig()
+        ctx.structure.config = ctx.openConfig() ?? ctx.createConfig()
+        const config = ctx.structure.config
+        console.log({config})
+
         const showChecked = mode => {
-            const input = ctx.structure.input
-            input.file.hide()
-            input.connect.hide()
-
-            const chart = this.structure.chart
-            chart.type.reset()
-
-            const datasets = this.structure.source.datasets
-            datasets.series?.destroy()
-
-            switch (mode) {
-                case 'file':
-                    input.file.show()
-                    chart.type.enable()
-                    config.input.mode = mode
-
-                    break
-                case 'realtime':
-                    input.connect.show()
-                    chart.type.disable()
-                    config.input.mode = mode
-
-                    break
-            }
+            ctx.updateMode(mode)
         }
 
         const showChartSelected = type => {
             ctx.updateDataSourceSection(type)
         }
 
-        const validateForm = () => {
-            if (FORM_STATE_DATA_SOURCE > form.state) return {
-                valid: false,
-                error: new Error(`InvalidState: ${form.state}`),
-            }
-
-            const mode = this.structure.input.mode.value
-            config.input.mode = mode
-            config.chart.type = chart.type.selected
-            config.chart.title = chart.title.value
-
-            switch (mode) {
-                case 'file':
-                    const chart = this.structure.chart
-                    const x = this.structure.source.axis.x
-                    config.source.axis.x.label = x.label.value
-                    config.source.axis.x.unit = x.unit.value
-                    config.source.axis.x.column = x.column.value
-                    config.source.axis.x.scale = x.scale.value
-
-                    switch (config.chart.type) {
-                        case 'line':
-                            const series = this.structure.source.datasets.series
-                            config.source.axis.y = null
-                            config.source.series = series.values
-                            break
-                        case 'bar':
-                            break
-                        case 'bubble':
-                            break
-                        case 'scatter':
-                            break
-                        case 'contour':
-                            break
-                    }
-                    break
-                case 'realtime':
-                    break
-                default:
-            }
-
-            ctx.settingManager.add(this.id, config)
+        const process = () => {
+            ctx.processConfig(config)
         }
 
         const input = this.structure.input
-        input.mode.fields.forEach(field => {
+        const fields = input.mode.fields
+        for (const field of fields.values()) {
             field.input.onchange = e => {
                 const mode = e.target.value
                 showChecked(mode)
             }
-        })
+        }
         input.mode.checked = 'di-type-file'
 
         const chart = this.structure.chart
@@ -431,7 +498,7 @@ export default class Widget extends BaseComponent {
 
         form.submitBtn.onclick = e => {
             e.preventDefault()
-            validateForm()
+            process()
 
             form.state = FORM_STATE_DATA_VALID
             modal.close()
@@ -511,5 +578,21 @@ export default class Widget extends BaseComponent {
 
     showControl() {
         this.$control.classList.remove('hidden')
+    }
+
+    openConfig() {
+        return this.settingManager.get(this.id)
+    }
+
+    saveConfig(config) {
+        this.settingManager.add(this.id, config)
+    }
+
+    deleteConfig() {
+        this.settingManager.delete(this.id)
+    }
+
+    hasConfig() {
+        return this.settingManager.has(this.id)
     }
 }

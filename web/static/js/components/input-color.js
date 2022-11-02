@@ -49,7 +49,7 @@ export default class InputColor extends BaseInput {
         const options = this.options
 
         const input = this.input
-        if (isNull(options.value)) input.value = this.randomColor()
+        if (isNil(options.value)) input.value = this.randomColor()
         input.requiered = options.requiered
     }
 

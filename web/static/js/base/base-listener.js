@@ -23,7 +23,7 @@ export default class BaseListener {
 
     removeListener(event, callback = null) {
         const callbacks = this.listeners(event) ?? []
-        if (isNull(callback)) {
+        if (isNil(callback)) {
             this._listeners.delete(event)
             return
         }

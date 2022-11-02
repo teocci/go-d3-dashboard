@@ -38,7 +38,7 @@ export default class Dropdown {
     }
 
     set onclick(f) {
-        if (isNull(f)) throw new Error('InvalidParameter: f is null')
+        if (isNil(f)) throw new Error('InvalidParameter: f is null')
         if (!isFunction(f)) throw new Error('InvalidParameter: f is not a function')
 
         for (const item of this.items.values()) {
