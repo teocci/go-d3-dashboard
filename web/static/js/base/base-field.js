@@ -8,24 +8,28 @@ export default class BaseField extends BaseComponent {
     constructor(element, options) {
         super(element)
 
-        const oldOptions = this.defaultOptions
-        this.options = merger(true, oldOptions, options)
-
-        if (this.options && !isNil(this.options.inputs) && this.options.inputs.length > 0) {
-            const inputs = []
-            for (const raw of this.options.inputs) {
-                const input = simpleMerge(BaseField.DEFAULT_INPUT_OPTIONS, raw)
-                input.label = input.label ?? this.tag
-                input.name = input.name ?? `${this.options.group}`
-                inputs.push(input)
-            }
-            this.options.inputs = [...inputs]
-        }
-        console.log({options: this.options})
+        this.loadOptions(options)
     }
 
     get defaultOptions() {
         return cloner(this.constructor.DEFAULT_OPTIONS)
+    }
+
+    loadOptions(options) {
+        const base = this.defaultOptions
+        const merged = simpleMerge(base, options)
+        this.options = merged
+
+        if (merged && !isNil(merged.inputs) && merged.inputs.length > 0) {
+            const inputs = []
+            for (const raw of merged.inputs) {
+                const input = simpleMerge(super.DEFAULT_INPUT_OPTIONS, raw)
+                input.label = input.label ?? this.tag
+                input.name = input.name ?? `${merged.group}`
+                inputs.push(input)
+            }
+            merged.inputs = [...inputs]
+        }
     }
 
     loadClasses() {

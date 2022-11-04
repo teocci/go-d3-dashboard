@@ -2,10 +2,6 @@
  * Created by RTT.
  * Author: teocci@yandex.com on 2022-10월-18
  */
-
-import ColorUtils from '../untils/color-utils.js'
-import Dropdown from '../components/dropdown.js'
-
 const DEFAULT_BG_COLOR = 'rgb(24, 27, 31)'
 const DEFAULT_TITLE_COLOR = 'rgb(204, 204, 220)'
 const DEFAULT_TICK_COLOR = 'rgb(204, 204, 220)'
@@ -16,15 +12,24 @@ const DEFAULT_TICK_FONT_SIZE = 14
 const DEFAULT_LEGEND_LABEL_FONT_SIZE = 14
 const DEFAULT_TITLE_FONT_SIZE = 16
 
-const asDate = s => new Date(s).toISOString()
-const asNumber = s => Number(s)
-
 export default class BaseChart {
     constructor(canvas) {
         this.$canvas = canvas
 
         this.settings = null
+        this.groupedByX = true
     }
+
+    get tag() {
+        return this.constructor.TAG
+    }
+
+    asDate = s => new Date(s).toISOString()
+    asNumber = s => {
+        const n = Number(s)
+        return isNumeric(n) ? n : null
+    }
+    scaleFnc = t => t === 'time' ? this.asDate : this.asNumber
 
     parseLabel(axis) {
         const label = axis?.label || axis?.column || ''
@@ -33,96 +38,15 @@ export default class BaseChart {
         return `${label}${unit}`
     }
 
+    /**
+     *
+     * @param xAxis
+     * @param yAxis
+     * @param raw
+     * @return {Object}
+     */
     parseDataset(xAxis, yAxis, raw) {
-        const xKey = xAxis.column
-        const xScale = xAxis.scale
-        const xFnc = xScale === 'time' ? asDate : asNumber
-
-        const yKey = yAxis.column
-        const yScale = yAxis.scale
-        const yFnc = yScale === 'time' ? asDate : asNumber
-        const yWidth = asNumber(yAxis.width) ?? 1
-        const yOpacity = asNumber(yAxis.opacity) ?? 1
-        const yCurve = yAxis.curve
-
-        const label = this.parseLabel(yAxis)
-        const borderColor = ColorUtils.transparentize(yAxis.color, yOpacity)
-        const backgroundColor = ColorUtils.transparentize(yAxis.color, yOpacity)
-        const borderWidth = yWidth
-        const values = raw.map(item => ({x: xFnc(item[xKey]), y: yFnc(item[yKey])}))
-
-        const mapper = new Map()
-        values.forEach(item => {
-            if (mapper.has(item.x)) mapper.get(item.x).push(item.y)
-            else mapper.set(item.x, [item.y])
-        })
-
-        const data = []
-        for (const [x, a] of mapper.entries()) {
-            const sum = a.reduce((sum, v) => sum + v, 0)
-            const y = sum / a.length
-            data.push({x, y})
-        }
-
-        const pointRadius = data.length > 100 ? 0 : yWidth + 1
-
-        const cubicInterpolationMode = yCurve === 'linear' ? 'default' : 'monotone'
-        const stepped = yCurve === 'step'
-        const tension = yCurve === 'smooth' ? 0.2 : 0
-
-        return {
-            data,
-            label,
-            borderColor,
-            backgroundColor,
-            borderWidth,
-            pointRadius,
-            tension,
-            stepped,
-            cubicInterpolationMode,
-        }
-    }
-
-    parseData(config) {
-        console.log({config})
-        const data = config.data
-        if (isNil(data)) return null
-
-        const x = config.source.axis?.x ?? null
-        const y = config.source.axis?.y ?? null
-        const series = config.source?.series ?? null
-        if (isNil(x) && isNil(y) && isNil(series)) return null
-
-        // const xKey = x.column
-        // const data = config.data.map(item => {
-        //     const o = {}
-        //     for (const key of Object.keys(item)) {
-        //         o[key === xKey ? 'x' : key] = item[key]
-        //     }
-        //     console.log({o})
-        //     return o
-        // })
-
-        const datasets = []
-        const result = {
-            datasets,
-        }
-
-        if (!isNil(y)) {
-            const item = this.parseDataset(x, y, data)
-            datasets.push(item)
-
-            return result
-        }
-
-        if (!isNil(series)) {
-            for (const raw of series) {
-                const item = this.parseDataset(x, raw, data)
-                datasets.push(item)
-            }
-        }
-
-        return result
+        return undefined
     }
 
     parseAxisTitle(axis) {
@@ -138,6 +62,43 @@ export default class BaseChart {
             color,
             font,
         }
+    }
+
+    parseAxisScale(raw) {
+        const key = raw.column ?? null
+        if (isNil(key)) return null
+
+        const scale = raw.scale || 'linear'
+        const fnc = this.scaleFnc(scale)
+        if (isNil(fnc)) return null
+
+        return {
+            key,
+            scale,
+            fnc,
+        }
+    }
+
+    parseXYDataset(x, y, raw) {
+        return raw.map(item => ({x: x.fnc(item[x.key]), y: y.fnc(item[y.key])}))
+    }
+
+    groupXYByX(values) {
+        const mapper = new Map()
+
+        for (const value of values) {
+            if (mapper.has(value.x)) mapper.get(value.x).push(value.y)
+            else mapper.set(value.x, [value.y])
+        }
+
+        const data = []
+        for (const [x, a] of mapper.entries()) {
+            const sum = a.reduce((sum, v) => sum + v, 0)
+            const y = sum / a.length
+            data.push({x, y})
+        }
+
+        return data
     }
 
     parseScale(axis) {
@@ -205,6 +166,29 @@ export default class BaseChart {
                 font,
             },
         }
+    }
+
+    parseDataSeries(x, series, data) {
+        const datasets = []
+        for (const raw of series) {
+            const item = this.parseDataset(x, raw, data)
+            datasets.push(item)
+        }
+
+        return datasets
+    }
+
+    parseData(config) {
+        // const xKey = x.column
+        // const data = config.data.map(item => {
+        //     const o = {}
+        //     for (const key of Object.keys(item)) {
+        //         o[key === xKey ? 'x' : key] = item[key]
+        //     }
+        //     console.log({o})
+        //     return o
+        // })
+        return undefined
     }
 
     parseOptions(config) {

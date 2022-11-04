@@ -194,7 +194,6 @@ export default class Widget extends BaseComponent {
         }
 
         return field
-
     }
 
     createDataInputSection() {
@@ -258,11 +257,9 @@ export default class Widget extends BaseComponent {
         for (const key in options) {
             if (key === Fieldset.TAG) continue
 
-            console.log(`key: ${key}`)
             const option = options[key]
             axis[key] = this.createField(option, $content)
         }
-        console.log({axis})
     }
 
     createSeriesSection(options) {
@@ -363,6 +360,23 @@ export default class Widget extends BaseComponent {
         ctx.updateColumns()
     }
 
+    processConfigAxis(id) {
+        const configAxis = {}
+
+        const axis = this.structure.source.axis[id]
+        for (const key in axis) {
+            if (key === 'fieldset') continue
+            configAxis[key] = axis[key].value
+        }
+
+        this.structure.config.source.axis[id] = configAxis
+    }
+
+    processConfigSeries() {
+        const series = this.structure.source.datasets.series
+        this.structure.config.source.series = series.values
+    }
+
     processConfig() {
         const ctx = this
 
@@ -380,25 +394,37 @@ export default class Widget extends BaseComponent {
         config.chart.type = chart.type.selected
         config.chart.title = chart.title.value
 
+        ctx.processConfigAxis('x')
+
         switch (mode) {
             case 'file':
-                const x = this.structure.source.axis.x
-                config.source.axis.x.label = x.label.value
-                config.source.axis.x.unit = x.unit.value
-                config.source.axis.x.column = x.column.value
-                config.source.axis.x.scale = x.scale.value
-
                 switch (config.chart.type) {
                     case 'line':
-                        const series = this.structure.source.datasets.series
+                        ctx.processConfigSeries('y')
+
                         config.source.axis.y = null
-                        config.source.series = series.values
+                        config.source.axis.radius = null
+
                         break
                     case 'bar':
+                        // ctx.processConfigSeries()
+                        ctx.processConfigAxis('y')
+
+                        // config.source.axis.y = null
+                        config.source.axis.radius = null
+                        config.source.axis.series = null
                         break
                     case 'bubble':
+                        ctx.processConfigAxis('y')
+                        ctx.processConfigAxis('r')
+
+                        config.source.axis.series = null
                         break
                     case 'scatter':
+                        ctx.processConfigAxis('y')
+
+                        config.source.axis.radius = null
+                        config.source.axis.series = null
                         break
                     case 'contour':
                         break

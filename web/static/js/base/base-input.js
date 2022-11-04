@@ -23,13 +23,16 @@ export default class BaseInput extends BaseComponent {
         this.label = null
         this.input = null
 
-        this.options = merger(true, this.defaultOptions, options)
+        this.options = simpleMerge(this.defaultOptions, options)
 
         this.initInput()
     }
 
     get defaultOptions() {
-        return merger(true, BaseInput.DEFAULT_INPUT_OPTIONS, this.constructor.DEFAULT_OPTIONS)
+        const base = cloner(BaseInput.DEFAULT_INPUT_OPTIONS)
+        const extended = cloner(this.constructor.DEFAULT_OPTIONS)
+
+        return simpleMerge(base, extended)
     }
 
     get value() {

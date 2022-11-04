@@ -157,13 +157,13 @@ const EXTEND_SCATTER_AXIS = {
         type: 'number',
         id: 'axis-radius',
         label: '반지름',
-        value: 2,
+        value: 5,
         step: .5,
         min: 0,
         max: 10,
         size: 3,
     },
-    'border-width': {
+    width: {
         type: 'number',
         id: 'axis-border-width',
         label: '너비',
@@ -173,7 +173,7 @@ const EXTEND_SCATTER_AXIS = {
         max: 10,
         size: 3,
     },
-    'border-color': {
+    color: {
         type: 'color',
         id: 'axis-border-color',
         label: '색상',
@@ -181,7 +181,7 @@ const EXTEND_SCATTER_AXIS = {
 }
 
 const EXTEND_BUBBLE_RADIUS = {
-    borderWidth: {
+    width: {
         type: 'number',
         id: 'axis-border-width',
         label: '너비',
@@ -191,17 +191,7 @@ const EXTEND_BUBBLE_RADIUS = {
         max: 10,
         size: 3,
     },
-    borderColor: {
-        type: 'color',
-        id: 'axis-border-color',
-        label: '색상',
-    },
-    backgroundColor: {
-        type: 'color',
-        id: 'axis-background-color',
-        label: '배경색',
-    },
-    backgroundOpacity: {
+    opacity: {
         type: 'number',
         id: 'axis-background-opacity',
         label: '투명도',
@@ -210,6 +200,16 @@ const EXTEND_BUBBLE_RADIUS = {
         min: 0,
         max: 1,
         size: 2,
+    },
+    color: {
+        type: 'color',
+        id: 'axis-border-color',
+        label: '색상',
+    },
+    background: {
+        type: 'color',
+        id: 'axis-background-color',
+        label: '배경색',
     },
 }
 
