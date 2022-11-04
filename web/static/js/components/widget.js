@@ -100,7 +100,6 @@ export default class Widget extends BaseComponent {
                     x: {},
                     y: null,
                 },
-                radius: null,
                 series: null,
             },
         }
@@ -127,7 +126,6 @@ export default class Widget extends BaseComponent {
             source: {
                 fieldset: null,
                 axis: {},
-                radius: null,
                 datasets: {
                     fieldset: null,
                     series: null,
@@ -403,7 +401,7 @@ export default class Widget extends BaseComponent {
                         ctx.processConfigSeries('y')
 
                         config.source.axis.y = null
-                        config.source.axis.radius = null
+                        config.source.axis.r = null
 
                         break
                     case 'bar':
@@ -411,7 +409,7 @@ export default class Widget extends BaseComponent {
                         ctx.processConfigAxis('y')
 
                         // config.source.axis.y = null
-                        config.source.axis.radius = null
+                        config.source.axis.r = null
                         config.source.axis.series = null
                         break
                     case 'bubble':
@@ -423,7 +421,7 @@ export default class Widget extends BaseComponent {
                     case 'scatter':
                         ctx.processConfigAxis('y')
 
-                        config.source.axis.radius = null
+                        config.source.axis.r = null
                         config.source.axis.series = null
                         break
                     case 'contour':
