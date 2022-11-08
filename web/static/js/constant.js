@@ -7,11 +7,6 @@ let mainModule
 let settings
 
 const DEFAULT_STRUCTURE_SETTINGS = {
-    fieldset: {
-        type: 'fieldset',
-        legend: '차트 설정',
-        classes: ['setting'],
-    },
     input: {
         fieldset: {
             type: 'fieldset',
@@ -152,7 +147,55 @@ const DEFAULT_AXIS = {
     },
 }
 
-const EXTEND_SCATTER_AXIS = {
+const EXTEND_LINE_Y_AXIS = {
+    curve: {
+        type: 'select',
+        id: 'axis-curve',
+        legend: '커브 타입',
+        items: [
+            {
+                label: '리니어',
+                value: 'linear',
+                selected: true,
+            },
+            {
+                label: '스무스',
+                value: 'smooth',
+            },
+            {
+                label: '스텝',
+                value: 'step',
+            },
+        ],
+    },
+    color: {
+        type: 'color',
+        id: 'axis-curve-color',
+        label: '색상',
+    },
+    width: {
+        type: 'number',
+        id: 'axis-curve-width',
+        label: '너비',
+        value: 2,
+        step: .5,
+        min: 0,
+        max: 10,
+        size: 3,
+    },
+    opacity: {
+        type: 'number',
+        id: 'axis-curve-opacity',
+        label: '투명도',
+        value: 1,
+        step: .1,
+        min: 0,
+        max: 1,
+        size: 2,
+    },
+}
+
+const EXTEND_SCATTER_Y_AXIS = {
     radius: {
         type: 'number',
         id: 'axis-radius',

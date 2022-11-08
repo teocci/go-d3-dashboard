@@ -72,15 +72,13 @@ export default class ChartPanel {
     }
 
     load(config) {
+        if (isNil(config)) throw new Error('InvalidParameter: null config')
+
         this.title = toPascalCase(config.chart.title)
 
         const type = config.chart.type
         this.chart = this.createChart(type)
         this.chart.init(config)
-    }
-
-    render() {
-        if (this.chart) this.chart.render()
     }
 
     /**
@@ -104,11 +102,18 @@ export default class ChartPanel {
         }
     }
 
+    render() {
+        if (this.chart) {
+            this.chart.render()
+            this.chart.resize()
+        }
+    }
+
     toggleMenu() {
         this.menu.toggle()
     }
 
     clear() {
-        this.chart.destroy()
+        if (this.chart) this.chart.destroy()
     }
 }

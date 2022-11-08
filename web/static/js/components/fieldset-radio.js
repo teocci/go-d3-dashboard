@@ -47,17 +47,13 @@ export default class FieldsetRadio extends Fieldset {
     }
 
     /**
-     * Checks the radio input by id
+     * Checks the radio input by value
      *
-     * @param {string} id
+     * @param {string} v
      */
-    set checked(id) {
-        const field = this.fieldById(id)
-        if (isNil(field)) throw new Error('InvalidParameter: null field')
-
-        const event = new Event('change')
-        field.input.checked = true
-        field.input.dispatchEvent(event)
+    set checked(v) {
+        const field = this.fieldByValue(v)
+        this.check(field)
     }
 
     /**
@@ -94,5 +90,37 @@ export default class FieldsetRadio extends Fieldset {
         }
 
         return null
+    }
+
+    /**
+     * Returns a field by value
+     * @param {string} v
+     * @return {null|InputRadio}
+     */
+    fieldByValue(v) {
+        const fields = this.fields.values()
+        for (const field of fields) {
+            if (field.input.value === v) return field
+        }
+
+        return null
+    }
+
+    check(field) {
+        if (isNil(field)) throw new Error('InvalidParameter: null field')
+
+        const event = new Event('change')
+        field.input.checked = true
+        field.input.dispatchEvent(event)
+    }
+
+    /**
+     * Checks the radio input by id
+     *
+     * @param {string} id
+     */
+    checkByID(id) {
+        const field = this.fieldById(id)
+        this.check(field)
     }
 }

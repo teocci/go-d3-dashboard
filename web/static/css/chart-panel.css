@@ -16,7 +16,7 @@
     box-shadow: none;
 }
 
-.panel-header {
+.panel-holder > .panel-header {
     display: flex;
     flex-wrap: nowrap;
     justify-content: center;
@@ -30,12 +30,12 @@
     border: 0;
 }
 
-.panel-header:hover {
+.panel-holder > .panel-header:hover {
     background-color: #ccccdc29;
     transition: background-color .1s ease-in-out
 }
 
-.panel-header h2 {
+.panel-holder > .panel-header h2 {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
@@ -61,7 +61,7 @@
     opacity: 0;
 }
 
-.panel-holder:hover .header-menu-item.toggle {
+.panel-holder .panel-holder:hover .header-menu-item.toggle {
     visibility: visible;
     transition: opacity .1s ease-in .2s;
     opacity: 1;
@@ -69,4 +69,10 @@
 
 .header-menu-item.toggle:hover {
     color: #fff
+}
+
+.panel-holder > .panel-content {
+    position: relative;
+    padding: 1rem;
+    height: 565px;
 }

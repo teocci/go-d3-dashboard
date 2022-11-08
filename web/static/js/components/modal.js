@@ -61,17 +61,21 @@ export default class Modal extends Draggable {
         $section.append($header, $content)
         $modal.appendChild($section)
         this.dom = $modal
+
         if (!isNil(this.holder)) this.holder.append($modal, $trigger)
     }
 
     close(e) {
-        if (!e) this.reset()
-        else if (e.target === e.currentTarget || e.target.parentNode.isCloseBtn) {
-            console.log({target: e.target, current: e.currentTarget})
-            e.preventDefault()
-            e.stopPropagation()
-            this.reset()
-        }
+        if (isNil(e)) return this.reset()
+
+        e.preventDefault()
+        e.stopPropagation()
+
+        const target = e.target
+        if (isNil(target)) return
+        if (target !== e.currentTarget && !target.parentNode.isCloseBtn) return
+
+        this.reset()
     }
 
     reset() {

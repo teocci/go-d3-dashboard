@@ -35,6 +35,20 @@ export default class Series extends BaseComponent {
         this.createEmptyTable()
     }
 
+    set values(data) {
+        if (isNil(data)) throw new Error('InvalidParameter: data is null')
+        this.destroy()
+
+        for (const item of data) {
+            const row = this.addEmptyRow(item.id)
+            console.log({item})
+            for (const k in item) {
+                if (k === 'id') continue
+                row[k].value = item[k]
+            }
+        }
+    }
+
     get values() {
         const data = []
 
@@ -127,11 +141,11 @@ export default class Series extends BaseComponent {
         return field
     }
 
-    addEmptyRow() {
+    addEmptyRow(id) {
         if (this.series.size === 10) return
 
         const row = {}
-        const hash = hashID()
+        const hash = id || hashID()
         row.id = hash
         const tr = document.createElement('tr')
         tr.id = hash
@@ -148,6 +162,8 @@ export default class Series extends BaseComponent {
 
         this.table.appendChild(tr)
         this.updateFirstLast()
+
+        return row
     }
 
     removeRow(hash) {

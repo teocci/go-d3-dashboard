@@ -5,38 +5,38 @@
 
 export default class BaseManager {
     constructor() {
-        this.settings = new Map()
+        this.items = new Map()
     }
 
     get(id) {
-        return this.settings.get(id) ?? null
+        return this.items.get(id) ?? null
     }
 
     add(id, setting) {
-        return this.settings.set(id, setting)
+        return this.items.set(id, setting)
     }
 
     has(id) {
-        return this.settings.has(id)
+        return this.items.has(id)
     }
 
     delete(id) {
-        this.settings.delete(id)
+        this.items.delete(id)
     }
 
     clear() {
-        this.settings.clear()
+        this.items.clear()
     }
 
     keys() {
-        return this.settings.keys() ?? null
+        return this.items.keys() ?? null
     }
 
     values() {
-        return this.settings.values() ?? null
+        return this.items.values() ?? null
     }
 
     entries() {
-        return this.settings.entries() ?? null
+        return this.items.entries() ?? null
     }
 }

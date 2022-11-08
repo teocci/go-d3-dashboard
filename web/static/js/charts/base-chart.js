@@ -196,6 +196,7 @@ export default class BaseChart {
         const legend = this.parseLegend()
         return {
             responsive: true,
+            maintainAspectRatio: false,
             scales,
             plugins: {
                 legend,
@@ -237,6 +238,10 @@ export default class BaseChart {
     render() {
         console.log({settings: this.settings})
         this.chart = new Chart(this.$canvas, this.settings)
+    }
+
+    resize() {
+        if (this.chart) this.chart.resize()
     }
 
     destroy() {
