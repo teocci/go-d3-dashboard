@@ -8,7 +8,8 @@
     position: relative
 }
 
-.dropdown-holder ul, .dropdown-holder li {
+.dropdown-holder ul,
+.dropdown-holder li {
     list-style-type: none;
     padding: 0;
 }
@@ -72,84 +73,124 @@
     overflow: hidden
 }
 
-.menu-item {
-    display: flex;
-    flex-wrap: nowrap;
-    font-weight: 400;
-    line-height: 1.5;
-    padding: 3px 20px 3px 15px;
-    clear: both;
-    color: #ccccdc;
-    white-space: nowrap;
-}
-
 .dropdown > li > a,
 .dropdown > li > button {
-    clear: both;
-    color: #ccccdc;
     display: block;
+    clear: both;
+    padding: 3px 20px 3px 15px;
+    color: #ccccdc;
     font-weight: 400;
     line-height: 1.5;
-    padding: 3px 20px 3px 15px;
     white-space: nowrap
 }
 
-
 .dropdown > li > a i,
 .dropdown > li > button i {
-    color: #ccccdc99;
-    display: inline-block;
-    margin-right: 10px;
     position: relative;
-    top: 3px
+    display: inline-block;
+    top: 3px;
+    margin-right: 10px;
+    color: #ccccdc99;
 }
 
 .dropdown > li > a .gicon,
 .dropdown > li > button .gicon {
     height: 14px;
+    width: 18px;
     opacity: .7;
-    width: 18px
 }
 
 .dropdown.menu {
+    margin-top: 0;
+    top: 25px;
+    left: -100px;
     background: #181b1f;
     box-shadow: 0 8px 24px #010409;
-    margin-top: 0;
-    left: -100px;
-    top: 25px;
 }
 
-.dropdown.menu > li > a,
-.dropdown.menu > li > button,
-.dropdown.menu > li > .menu-item {
-    border-left: 2px solid #0000;
+.dropdown.menu .item {
+    display: flex;
+    flex-wrap: nowrap;
+    padding: 3px 20px 3px 15px;
+    font-weight: 400;
+    line-height: 1.5;
+    clear: both;
+    color: #ccccdc;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.dropdown .item .item-text {
+    flex: 1;
+}
+
+.menu > li > a,
+.menu > li > button,
+.menu > li > .item,
+.menu > li > .menu-item-wrapper .item {
     display: flex;
     padding: 5px 10px;
+    border-left: 2px solid #0000;
+    gap: .5rem;
 }
 
-.dropdown.menu > li > a:hover,
-.dropdown.menu > li > button:hover,
-.dropdown.menu > li > .menu-item:hover {
+.menu > li > a:hover,
+.menu > li > button:hover,
+.menu > li > .item:hover,
+.menu > li > .menu-item-wrapper:hover > .item {
     background: #ccccdc29 !important;
     color: #fff;
 }
 
-.dropdown-item-text {
-    flex-grow: 1;
+.menu-item-wrapper,
+.menu-item-wrapper[data-type="submenu"] .item {
+    position: relative;
 }
 
-.dropdown > li > a:focus,
-.dropdown > li > a:hover,
-.dropdown > li > button:focus,
-.dropdown > li > button:hover,
-.dropdown > .active > .menu-item:focus,
-.dropdown > .active > .menu-item:hover,
-.dropdown-submenu:focus > a,
-.dropdown-submenu:hover > a,
-.dropdown-submenu:focus > button,
-.dropdown-submenu:hover > button,
-.dropdown-submenu:focus > .menu-item,
-.dropdown-submenu:hover > .menu-item {
+.submenu-wrapper {
+    display: none;
+    position: absolute;
+    background-color: #181b1f;
+    border: 1px solid #ccccdc12;
+    float: left;
+    left: 0;
+    list-style: none;
+    margin: 2px 0 0;
+    min-width: 140px;
+    text-align: left;
+    top: 100%;
+    z-index: 1040
+}
+
+.menu-item-wrapper .submenu-wrapper {
+    background: #181b1f;
+    box-shadow: 0 8px 24px #010409;
+    margin-top: 0;
+}
+
+.menu-item-wrapper[data-type="submenu"] > .submenu-wrapper {
+    left: 100%;
+    margin-left: -1px;
+    margin-top: 0;
+    top: 0;
+}
+
+.menu-item-wrapper[data-type="submenu"]:hover > .submenu-wrapper {
+    display: block;
+}
+
+.menu > li > a:focus,
+.menu > li > a:hover,
+.menu > li > button:focus,
+.menu > li > button:hover,
+.menu > .active > .item:focus,
+.menu > .active > .item:hover,
+.submenu:focus > a,
+.submenu:hover > a,
+.submenu:focus > button,
+.submenu:hover > button,
+.submenu:focus > .item,
+.submenu:hover > .item {
     background-color: #343436;
     color: #fff;
     text-decoration: none;
@@ -161,9 +202,9 @@
 .dropdown > .active > button,
 .dropdown > .active > button:focus,
 .dropdown > .active > button:hover,
-.dropdown > .active > .menu-item,
-.dropdown > .active > .menu-item:focus,
-.dropdown > .active > .menu-item:hover {
+.dropdown > .active > .item,
+.dropdown > .active > .item:focus,
+.dropdown > .active > .item:hover {
     background-color: #343436;
     color: #fff;
     outline: 0;
@@ -176,9 +217,9 @@
 .dropdown > .disabled > button,
 .dropdown > .disabled > button:focus,
 .dropdown > .disabled > button:hover,
-.dropdown > .disabled > .menu-item,
-.dropdown > .disabled > .menu-item:focus,
-.dropdown > .disabled > .menu-item:hover {
+.dropdown > .disabled > .item,
+.dropdown > .disabled > .item:focus,
+.dropdown > .disabled > .item:hover {
     color: #8e8e8e;
 }
 
@@ -186,8 +227,8 @@
 .dropdown > .disabled > a:hover,
 .dropdown > .disabled > button:focus,
 .dropdown > .disabled > button:hover,
-.dropdown > .disabled > .menu-item:focus,
-.dropdown > .disabled > .menu-item:hover {
+.dropdown > .disabled > .item:focus,
+.dropdown > .disabled > .item:hover {
     background-color: #0000;
     background-image: none;
     cursor: default;
@@ -228,44 +269,44 @@
     top: auto;
 }
 
-.dropdown-submenu {
+.dropdown.menu .submenu {
     position: relative;
 }
 
-.dropdown-submenu > .dropdown {
+.dropdown.menu .submenu > .dropdown {
     left: 100%;
     margin-left: -1px;
     margin-top: 0;
     top: 0;
 }
 
-.dropdown-submenu:hover > .dropdown {
+.dropdown.menu .submenu:hover > .dropdown {
     display: block;
 }
 
-.dropup .dropdown-submenu > .dropdown {
+.dropup .submenu > .dropdown {
     bottom: 0;
     margin-bottom: -2px;
     margin-top: 0;
     top: auto;
 }
 
-.dropdown-submenu:hover > a:after,
-.dropdown-submenu:hover > button:after {
+.dropdown.menu .submenu:hover > a:after,
+.dropdown.menu .submenu:hover > button:after {
     border-left-color: #fff;
 }
 
-.dropdown-submenu.pull-left {
+.dropdown.menu .submenu.pull-left {
     float: none !important;
 }
 
-.dropdown-submenu.pull-left > .dropdown {
+.dropdown.menu .submenu.pull-left > .dropdown {
     left: -100%;
     margin-left: 2px;
     width: 100%;
 }
 
-.dropdown-submenu.pull-right {
+.dropdown.menu .submenu.pull-right {
     float: none !important
 }
 

@@ -33,7 +33,7 @@ export default class Dashboard extends BaseComponent {
         const widgets = this.widgetManager.values()
         for (const widget of widgets ) {
             widget.state.onchange = v => {
-                this.onWidgetStateChange()
+                this.onWidgetStateChange(widget, v)
             }
         }
     }
@@ -52,8 +52,7 @@ export default class Dashboard extends BaseComponent {
         $dashboard.appendChild(widget.dom)
     }
 
-    onWidgetStateChange(v) {
-        console.log({v})
+    onWidgetStateChange(widget, v) {
         if (v === Widget.STATE_DATA_RENDERED) {
 
         }

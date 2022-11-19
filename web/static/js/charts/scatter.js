@@ -16,14 +16,7 @@ export default class Scatter extends BaseChart {
      * @return {Object|null}
      */
     parseDataset(rawX, rawY, raw) {
-        const x = this.parseAxisScale(rawX)
-        const y = this.parseAxisScale(rawY)
-
-        if (isNil(x)) return null
-        if (isNil(y)) return null
-
-        const values = this.parseXYDataset(x, y, raw)
-        const data = this.groupedByX ? this.groupXYByX(values) : values
+        const {data} = super.parseDataset(rawX, rawY, raw)
 
         const yWidth = this.asNumber(rawY.width) || 1
         const yOpacity = this.asNumber(rawY.opacity) || 1
@@ -53,25 +46,5 @@ export default class Scatter extends BaseChart {
             stepped,
             cubicInterpolationMode,
         }
-    }
-
-    parseData(config) {
-        console.log({config})
-        const data = config.data
-        if (isNil(data)) return null
-
-        const x = config.source.axis?.x ?? null
-        const y = config.source.axis?.y ?? null
-        if (isNil(x) && isNil(y)) return null
-
-        const datasets = []
-        const result = {
-            datasets,
-        }
-
-        const item = this.parseDataset(x, y, data)
-        datasets.push(item)
-
-        return result
     }
 }

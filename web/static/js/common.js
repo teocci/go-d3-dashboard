@@ -6,10 +6,10 @@ const REGEX_SNAKE_CASE = /[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[
 const REGEX_CAMEL_CASE = /[^a-zA-Z0-9]+(.)/g
 const REGEX_PASCAL_CASE = /\w\S*/g
 
-const isObject = o => o && 'object' === typeof o
-const isArray = a => a && a.constructor === Array
-const isDate = d => d instanceof Date
-const isFunction = f => f instanceof Function
+const isObject = o => !!o && 'object' === typeof o
+const isArray = a => !!a && a.constructor === Array
+const isDate = d => !!d && d.constructor ===  Date
+const isFunction = f => !!f && 'function' === typeof f
 
 const isBoolean = b => 'boolean' === typeof b
 const isNumber = n => 'number' === typeof n

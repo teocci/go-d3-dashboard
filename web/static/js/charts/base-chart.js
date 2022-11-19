@@ -24,6 +24,10 @@ export default class BaseChart {
         return this.constructor.TAG
     }
 
+    get axisKeys() {
+        return {x: []}
+    }
+
     asDate = s => new Date(s).toISOString()
     asNumber = s => {
         const n = Number(s)
@@ -40,13 +44,22 @@ export default class BaseChart {
 
     /**
      *
-     * @param xAxis
-     * @param yAxis
+     * @param rawX
+     * @param rawY
      * @param raw
      * @return {Object}
      */
-    parseDataset(xAxis, yAxis, raw) {
-        return undefined
+    parseDataset(rawX, rawY, raw) {
+        const x = this.parseAxisScale(rawX)
+        const y = this.parseAxisScale(rawY)
+
+        if (isNil(x)) return null
+        if (isNil(y)) return null
+
+        const values = this.parseXYDataset(x, y, raw)
+        const data = this.groupedByX ? this.groupXYByX(values) : values
+
+        return {data}
     }
 
     parseAxisTitle(axis) {
@@ -179,34 +192,44 @@ export default class BaseChart {
     }
 
     parseData(config) {
-        // const xKey = x.column
-        // const data = config.data.map(item => {
-        //     const o = {}
-        //     for (const key of Object.keys(item)) {
-        //         o[key === xKey ? 'x' : key] = item[key]
-        //     }
-        //     console.log({o})
-        //     return o
-        // })
-        return undefined
+        console.log({config})
+        const data = config.data
+        if (isNil(data)) return null
+
+        const x = config.source.axis?.x ?? null
+        const y = config.source.axis?.y ?? null
+        if (isNil(x) && isNil(y)) return null
+
+        const datasets = [this.parseDataset(x, y, data)]
+
+        return {
+            datasets,
+        }
     }
 
     parseOptions(config) {
         const scales = this.parseScales(config)
+        const hover = {
+            mode: 'index',
+            intersect: false,
+        }
         const legend = this.parseLegend()
+        const plugins = {
+            legend,
+        }
+
         return {
             responsive: true,
             maintainAspectRatio: false,
             scales,
-            plugins: {
-                legend,
-            },
+            hover,
+            plugins,
         }
     }
 
     loadPlugins() {
-        const plugin = {
-            id: 'custom_canvas_background_color',
+        const bg = {
+            id: 'custom_canvas_bg_color',
             beforeDraw: chart => {
                 const {ctx} = chart
                 ctx.save()
@@ -216,7 +239,48 @@ export default class BaseChart {
                 ctx.restore()
             },
         }
-        return [plugin]
+        const corsair = {
+            id: 'corsair',
+            defaults: {
+                width: 1,
+                color: '#f0f0f0',
+                dash: [3, 3],
+            },
+            afterInit: (chart, args, opts) => {
+                chart.corsair = {
+                    x: 0,
+                    y: 0,
+                }
+            },
+            afterEvent: (chart, args) => {
+                const {inChartArea} = args
+                const {type,x,y} = args.event
+
+                chart.corsair = {x, y, draw: inChartArea}
+                chart.draw()
+            },
+            afterDraw: (chart, args, opts) => {
+                const {ctx} = chart
+                const {top, bottom, left, right} = chart.chartArea
+                const {x, y, draw} = chart.corsair
+                if (!draw) return
+
+                ctx.save()
+
+                ctx.beginPath()
+                ctx.lineWidth = opts.width
+                ctx.strokeStyle = opts.color
+                ctx.setLineDash(opts.dash)
+                ctx.moveTo(x, bottom)
+                ctx.lineTo(x, top)
+                ctx.moveTo(left, y)
+                ctx.lineTo(right, y)
+                ctx.stroke()
+
+                ctx.restore()
+            }
+        }
+        return [bg, corsair]
     }
 
     init(config) {

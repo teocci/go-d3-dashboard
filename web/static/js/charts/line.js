@@ -16,14 +16,7 @@ export default class Line extends BaseChart {
      * @return {Object|null}
      */
     parseDataset(rawX, rawY, raw) {
-        const x = this.parseAxisScale(rawX)
-        const y = this.parseAxisScale(rawY)
-
-        if (isNil(x)) return null
-        if (isNil(y)) return null
-
-        const values = this.parseXYDataset(x, y, raw)
-        const data = this.groupedByX ? this.groupXYByX(values) : values
+        const {data} = super.parseDataset(rawX, rawY, raw)
 
         const yWidth = this.asNumber(rawY.width) || 1
         const yOpacity = this.asNumber(rawY.opacity) || 1
@@ -35,7 +28,7 @@ export default class Line extends BaseChart {
         const borderColor = ColorUtils.transparentize(yColor, yOpacity)
         const backgroundColor = ColorUtils.transparentize(yColor, yOpacity)
 
-        const pointRadius = data.length > 100 ? 0 : yWidth + 1
+        const pointRadius = data.length > 100 ? 0 : yWidth
 
         const cubicInterpolationMode = yCurve === 'linear' ? 'default' : 'monotone'
         const stepped = yCurve === 'step'

@@ -41,6 +41,7 @@ const DEFAULT_STRUCTURE_SETTINGS = {
             accept: '.csv',
             mimeTypes: [
                 'text/csv',
+                'application/vnd.ms-excel',
             ],
         },
         connect: {
@@ -209,7 +210,7 @@ const EXTEND_SCATTER_Y_AXIS = {
     width: {
         type: 'number',
         id: 'axis-border-width',
-        label: '너비',
+        label: '두께',
         value: 2,
         step: .5,
         min: 0,
@@ -227,7 +228,7 @@ const EXTEND_BUBBLE_RADIUS = {
     width: {
         type: 'number',
         id: 'axis-border-width',
-        label: '너비',
+        label: '두께',
         value: 2,
         step: .5,
         min: 0,
@@ -325,7 +326,7 @@ const DEFAULT_LINE_ATTRIBUTES = [
     {
         type: 'number',
         id: 'width',
-        label: '선 길이',
+        label: '선 두께',
         options: {
             value: 2,
             step: .5,

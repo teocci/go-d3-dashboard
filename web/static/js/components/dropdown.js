@@ -5,12 +5,44 @@
 export default class Dropdown {
     static MENU_TYPE_ITEM = 'item'
     static MENU_TYPE_SUBMENU = 'submenu'
+    static MENU_TYPE_SUBMENU_ITEM = 'submenu-item'
     static MENU_TYPE_DIVIDER = 'divider'
 
     static MENU_ITEM_EDIT = 'edit'
     static MENU_ITEM_REMOVE = 'remove'
+    static MENU_ITEM_CSV = 'csv'
+    static MENU_ITEM_EXPORT = 'export'
+    static SUBMENU_ITEM_PNG = 'png'
+    static SUBMENU_ITEM_JPEG = 'jpeg'
 
     static ITEMS = [
+        {
+            id: Dropdown.MENU_ITEM_CSV,
+            type: Dropdown.MENU_TYPE_ITEM,
+            label: 'csv로 수출',
+            icon: 'fa-file-csv',
+        },
+        {
+            id: Dropdown.MENU_ITEM_EXPORT,
+            type: Dropdown.MENU_TYPE_SUBMENU,
+            label: '이미지로 수출',
+            icon: 'fa-file-image',
+            items: [
+                {
+                    id: Dropdown.SUBMENU_ITEM_PNG,
+                    type: Dropdown.MENU_TYPE_SUBMENU_ITEM,
+                    label: 'png 파일',
+                },
+                {
+                    id: Dropdown.SUBMENU_ITEM_JPEG,
+                    type: Dropdown.MENU_TYPE_SUBMENU_ITEM,
+                    label: 'jpeg 파일',
+                },
+            ],
+        },
+        {
+            type: Dropdown.MENU_TYPE_DIVIDER,
+        },
         {
             id: Dropdown.MENU_ITEM_EDIT,
             type: Dropdown.MENU_TYPE_ITEM,
@@ -51,7 +83,7 @@ export default class Dropdown {
         $wrapper.classList.add('dropdown-holder')
 
         const $menu = document.createElement('ul')
-        $menu.classList.add('dropdown', 'menu')
+        $menu.classList.add('dropdown', 'main', 'menu')
 
         $wrapper.appendChild($menu)
 
@@ -65,9 +97,12 @@ export default class Dropdown {
             switch (item.type) {
                 case Dropdown.MENU_TYPE_DIVIDER:
                     this.addDivider(item)
-                break
+                    break
                 case Dropdown.MENU_TYPE_ITEM:
                     this.addItem(item)
+                    break
+                case Dropdown.MENU_TYPE_SUBMENU:
+                    this.addSubmenu(item)
                     break
                 default:
                     throw new Error(`InvalidType: ${item.type} not supported.`)
@@ -82,12 +117,13 @@ export default class Dropdown {
         $menu.appendChild($wrapper)
     }
 
-    addItem(item) {
-        const $menu = this.menu
-        const $wrapper = document.createElement('li')
+    createMenuItem(item) {
+        const $wrapper = document.createElement('div')
+        $wrapper.classList.add('menu-item-wrapper')
+        $wrapper.dataset.type = item.type
 
         const $item = document.createElement('div')
-        $item.classList.add('menu-item')
+        $item.classList.add('menu-item', 'item')
         $item.dataset.action = item.id
         $item.dataset.type = item.type
 
@@ -99,13 +135,89 @@ export default class Dropdown {
 
         const $itemText = document.createElement('div')
         $itemText.classList.add('item-text')
-
         $itemText.textContent = item.label
 
         $itemIcon.appendChild($icon)
         $item.append($itemIcon, $itemText)
+
         $wrapper.appendChild($item)
-        $menu.appendChild($wrapper)
+
+        return $wrapper
+    }
+
+    createSubmenu(items) {
+        const $wrapper = document.createElement('div')
+        $wrapper.classList.add('submenu-wrapper')
+
+        const $submenu = document.createElement('ul')
+        $submenu.classList.add('menu', 'submenu')
+
+        for (const item of items) {
+            this.addSubmenuItem($submenu, item)
+        }
+
+        $wrapper.appendChild($submenu)
+
+        return $wrapper
+    }
+
+    createSubmenuItem(item) {
+        const $item = document.createElement('div')
+        $item.classList.add('submenu-item', 'item')
+        $item.dataset.action = item.id
+        $item.dataset.type = item.type
+
+        const $itemText = document.createElement('div')
+        $itemText.classList.add('item-text')
+        $itemText.textContent = item.label
+
+        $item.appendChild($itemText)
+
+        return $item;
+    }
+
+    addItem(item) {
+        const $menu = this.menu
+        const $li = document.createElement('li')
+        const $wrapper = this.createMenuItem(item)
+        const $item = $wrapper.querySelector('.menu-item')
+
+        $li.appendChild($wrapper)
+        $menu.appendChild($li)
+
+        this.items.set(item.id, $item)
+    }
+
+    addSubmenu(item) {
+        const $menu = this.menu
+        const $li = document.createElement('li')
+        const $wrapper = this.createMenuItem(item)
+        const $item = $wrapper.querySelector('.menu-item')
+
+        const $itemAngle = document.createElement('div')
+        $itemAngle.classList.add('item-angle')
+
+        const $angle = document.createElement('i')
+        $angle.classList.add('fa-solid', 'fa-angle-right')
+
+        $itemAngle.appendChild($angle)
+        $item.appendChild($itemAngle)
+
+        const $submenu = this.createSubmenu(item.items)
+
+        $wrapper.appendChild($submenu)
+        $li.appendChild($wrapper)
+        $menu.appendChild($li)
+
+        this.items.set(item.id, $wrapper)
+    }
+
+    addSubmenuItem($submenu, item) {
+        const $wrapper = document.createElement('li')
+        const $item = this.createSubmenuItem(item)
+
+        $wrapper.appendChild($item)
+        $submenu.appendChild($wrapper)
 
         this.items.set(item.id, $item)
     }

@@ -655,25 +655,52 @@ export default class Widget extends BaseComponent {
         }
     }
 
+    downloadFile(type) {
+        const ctx = this
+        switch (type) {
+            case Dropdown.MENU_ITEM_CSV:
+                console.log({type})
+
+                break
+            case Dropdown.SUBMENU_ITEM_PNG:
+            case Dropdown.SUBMENU_ITEM_JPEG:
+                console.log({type})
+
+                break
+            default:
+                throw new Error(`InvalidAction: ${type} file not supported.`)
+        }
+
+    }
+
     menuItemClick(e) {
         const ctx = this
         const $target = e.currentTarget
         const action = $target.dataset.action
         const type = $target.dataset.type
+        switch (type) {
+            case Dropdown.MENU_TYPE_ITEM:
+            case Dropdown.MENU_TYPE_SUBMENU_ITEM:
+                switch (action) {
+                    case Dropdown.MENU_ITEM_EDIT:
+                        ctx.openModal()
 
-        if (type === 'item') {
-            switch (action) {
-                case Dropdown.MENU_ITEM_EDIT:
-                    ctx.openModal()
+                        break
+                    case Dropdown.MENU_ITEM_REMOVE:
+                        ctx.removeWidget()
 
-                    break
-                case Dropdown.MENU_ITEM_REMOVE:
-                    ctx.removeWidget()
+                        break
+                    case Dropdown.MENU_ITEM_CSV:
+                    case Dropdown.SUBMENU_ITEM_PNG:
+                    case Dropdown.SUBMENU_ITEM_JPEG:
+                        ctx.downloadFile(action)
 
-                    break
-                default:
-                    throw new Error(`InvalidAction: ${action} not supported.`)
-            }
+                        break
+                    default:
+                        throw new Error(`InvalidAction: ${action} not supported.`)
+                }
+
+                break
         }
     }
 
