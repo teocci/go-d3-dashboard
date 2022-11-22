@@ -30,9 +30,17 @@ func ServeWS(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	go client.writePump()
 	go client.readPump()
 
-	msg, _ := json.Marshal(client)
+	msg := &WSCMessage{
+		CMD: resWSConnected,
+		Data: &User{
+			ID:      client.ID,
+			Addr:    client.Addr,
+			EnterAt: client.EnterAt,
+		},
+	}
 
-	client.send <- msg
+	str, _ := json.Marshal(msg)
+	client.send <- str
 }
 
 func GenUserId() string {

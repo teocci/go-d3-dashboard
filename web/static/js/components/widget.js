@@ -15,13 +15,13 @@ import ChartSettingManager from '../managers/chart-setting-manager.js'
 import ObservableObject from '../base/observable-object.js'
 import ChartPanel from './chart-panel.js'
 import Dropdown from './dropdown.js'
-import InputNumber from './input-number.js'
-import InputColor from './input-color.js'
-import FieldsetCheckbox from './fieldset-checkbox.js'
 import Line from '../charts/line.js'
 import Bar from '../charts/bar.js'
 import Scatter from '../charts/scatter.js'
 import Bubble from '../charts/bubble.js'
+import InputBuilder from './input-builder.js'
+import InputConnection from './input-connection.js'
+import WSClient from '../ws/WSClient.js'
 
 const FORM_STATE_INIT = BaseForm.STATE_INIT
 const FORM_STATE_DATA_INPUT = BaseForm.STATE_DATA_INPUT
@@ -53,6 +53,8 @@ export default class Widget extends BaseComponent {
 
         this.settingManager = new ChartSettingManager()
         this.chartPanel = new ChartPanel(this.$content)
+
+        this.websocket = null
 
         this.initListeners()
     }
@@ -172,40 +174,6 @@ export default class Widget extends BaseComponent {
         return options
     }
 
-    createField(options, $holder) {
-        const type = options.type ?? null
-        $holder = $holder ?? null
-
-        let field = null
-        switch (type) {
-            case InputText.TAG:
-                field = new InputText($holder, options)
-                break
-            case InputNumber.TAG:
-                field = new InputNumber($holder, options)
-                break
-            case Select.TAG:
-                field = new Select($holder, options)
-                break
-            case InputColor.TAG:
-                field = new InputColor($holder, options)
-                break
-            case Fieldset.TAG:
-                field = new Fieldset($holder, options)
-                break
-            case FieldsetRadio.TAG:
-                field = new FieldsetRadio($holder, options)
-                break
-            case FieldsetCheckbox.TAG:
-                field = new FieldsetCheckbox($holder, options)
-                break
-            default:
-                throw new Error(`InvalidType: type ${type} not supported`)
-        }
-
-        return field
-    }
-
     createDataInputSection() {
         const options = this.structure.options.input
 
@@ -215,7 +183,7 @@ export default class Widget extends BaseComponent {
         const $content = fieldset.content
         const mode = new FieldsetRadio($content, options.mode)
         const file = new InputFile($content, options.file)
-        const connect = new InputText($content, options.connect)
+        const connect = new InputConnection($content, options.connect)
 
         const input = this.structure.input
         input.fieldset = fieldset
@@ -268,7 +236,7 @@ export default class Widget extends BaseComponent {
             if (key === Fieldset.TAG) continue
 
             const option = options[key]
-            axis[key] = this.createField(option, $content)
+            axis[key] = InputBuilder.createField(option, $content)
         }
     }
 
@@ -290,7 +258,7 @@ export default class Widget extends BaseComponent {
         const $content = axis.fieldset.content
         for (const key in options) {
             const option = options[key]
-            axis[key] = this.createField(option, $content)
+            axis[key] = InputBuilder.createField(option, $content)
         }
     }
 
@@ -621,6 +589,23 @@ export default class Widget extends BaseComponent {
 
         input.file.onload = d => {
             ctx.loadData(d)
+        }
+
+        input.connect.onClick = req => {
+            const action = req.action
+            switch (action) {
+                case InputConnection.STATUS_CONNECT:
+                    console.log({req})
+                    ctx.websocket = new WSClient(req)
+                    ctx.websocket.connect()
+                    break
+                case InputConnection.STATUS_DISCONNECT:
+                    console.log({req})
+                    ctx.websocket.disconnect()
+                    break
+                default:
+                    throw new Error(`InvalidType: type ${action} not supported`)
+            }
         }
     }
 

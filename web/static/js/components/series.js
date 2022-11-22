@@ -8,6 +8,7 @@ import InputNumber from './input-number.js'
 import Select from './select.js'
 import InputColor from './input-color.js'
 import Actions from './actions.js'
+import InputBuilder from './input-builder.js'
 
 export default class Series extends BaseComponent {
     static TAG = 'series'
@@ -118,16 +119,10 @@ export default class Series extends BaseComponent {
         }, attribute.options)
         switch (type) {
             case 'text':
-                field = new InputText(null, options)
-                break
             case 'number':
-                field = new InputNumber(null, options)
-                break
             case 'select':
-                field = new Select(null, options)
-                break
             case 'color':
-                field = new InputColor(null, options)
+                field = InputBuilder.createField(options)
                 break
             case 'actions':
                 options.hash = hash

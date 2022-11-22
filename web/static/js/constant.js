@@ -139,9 +139,8 @@ const DEFAULT_STRUCTURE_SETTINGS = {
             ],
         },
         connect: {
-            type: 'text',
+            type: 'connection',
             id: 'di-connection',
-            label: 'Connection',
         },
     },
     chart: {

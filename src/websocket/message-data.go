@@ -18,11 +18,6 @@ type RegisterData struct {
 	Name  string `json:"name,omitempty"`
 }
 
-type IOTData struct {
-	Time  int64   `json:"time"`
-	Value float32 `json:"value"`
-}
-
 func (d *RegisterData) FromMap(m map[string]interface{}) error {
 	return parseMap(m, d)
 }

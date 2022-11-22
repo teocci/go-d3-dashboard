@@ -62,10 +62,8 @@ export default class BaseListener {
         const args = [...arguments].slice(1)
         const callbacks = this.listeners(event) ?? []
 
-        if (callbacks) {
-            for (const callback of callbacks) {
-                callback.apply(this, args)
-            }
+        for (const callback of callbacks) {
+            callback.apply(this, args)
         }
     }
 

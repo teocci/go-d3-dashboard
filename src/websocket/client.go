@@ -4,6 +4,7 @@
 package websocket
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"math/rand"
@@ -31,14 +32,19 @@ const (
 )
 
 const (
-	resWSConnected    = "ws-connected"
-	resWSDisconnected = "ws-disconnected"
+	resWSConnected        = "ws-connected"
+	resClientRegistered   = "client-registered"
+	resClientUnregistered = "client-unregistered"
+	resIOTConnected       = "iot-connected"
+	resIOTUpdated         = "iot-updated"
+	resWSDisconnected     = "ws-disconnected"
 )
 
 const (
-	reqRegister   = "register"
-	reqConnectIOT = "connect-iot"
-	reqIOTUpdate  = "iot-update"
+	reqRegisterClient   = "register-client"
+	reqUnregisterClient = "register-client"
+	reqConnectIOT       = "connect-iot"
+	reqIOTUpdate        = "iot-update"
 )
 
 const (
@@ -118,7 +124,7 @@ Events:
 		fmt.Printf("%#v\n", message)
 
 		switch message.CMD {
-		case "register":
+		case reqRegisterClient:
 			// Handles group registering for the client
 			var data RegisterData
 			_ = data.FromMap(message.Data)
@@ -132,6 +138,15 @@ Events:
 					fmt.Printf("%#v\n", iot.clients)
 				}
 
+				msg := &RegisteredMessage{
+					CMD: resClientRegistered,
+					Data: &RegisteredData{
+						Columns: iotColumns,
+					},
+				}
+
+				str, _ := json.Marshal(msg)
+				c.send <- str
 			case roleIOTPusher:
 
 			}
@@ -203,14 +218,17 @@ func (c *Client) writePump() {
 				return
 			}
 		case <-fileTicker.C:
-			iot := &IOTData{
-				Time:  time.Now().UnixMilli(),
-				Value: randFloat32(3, 79),
+			msg := &IOTMessage{
+				CMD: resIOTUpdated,
+				Data: &IOTData{
+					Time:  time.Now().UnixMilli(),
+					Value: randFloat32(3, 79),
+				},
 			}
 
-			if iot != nil {
+			if msg != nil {
 				_ = c.conn.SetWriteDeadline(time.Now().Add(writeWait))
-				if err := c.conn.WriteJSON(iot); err != nil {
+				if err := c.conn.WriteJSON(msg); err != nil {
 					return
 				}
 			}
