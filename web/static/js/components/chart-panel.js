@@ -3,6 +3,7 @@ import Line from '../charts/line.js'
 import Bar from '../charts/bar.js'
 import Scatter from '../charts/scatter.js'
 import Bubble from '../charts/bubble.js'
+import LineSeries from '../charts/line-series.js'
 
 /**
  * Created by RTT.
@@ -76,8 +77,7 @@ export default class ChartPanel {
 
         this.title = toPascalCase(config.chart.title)
 
-        const type = config.chart.type
-        this.chart = this.createChart(type)
+        this.chart = this.createChart(config.chart.type)
         this.chart.init(config)
     }
 
@@ -90,7 +90,7 @@ export default class ChartPanel {
         const $canvas = this.$canvas
         switch (type) {
             case Line.TAG:
-                return new Line($canvas)
+                return new LineSeries($canvas)
             case Scatter.TAG:
                 return new Scatter($canvas)
             case Bar.TAG:

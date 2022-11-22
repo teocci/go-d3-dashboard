@@ -321,6 +321,8 @@ export default class Widget extends BaseComponent {
                 config.chart.type = LINE_CHART
 
                 break
+            default:
+                throw new Error(`InvalidMode: ${mode} not supported.`)
         }
 
         config.input.mode = mode
@@ -335,12 +337,19 @@ export default class Widget extends BaseComponent {
         switch (type) {
             case LINE_CHART:
                 const mode = ctx.structure.config.input.mode
-                if (mode === FILE_MODE) ctx.createSeriesSection(LINE_SERIES)
-                else ctx.createAxisSection('y', EXTEND_LINE_Y_AXIS)
-
+                switch (mode) {
+                    case FILE_MODE:
+                        ctx.createSeriesSection(LINE_SERIES)
+                        break
+                    case REALTIME_MODE:
+                        ctx.createAxisSection('y', EXTEND_LINE_Y_AXIS)
+                        break
+                    default:
+                        throw new Error(`InvalidMode: ${mode} not supported.`)
+                }
                 break
             case BAR_CHART:
-                ctx.createAxisSection('y')
+                ctx.createAxisSection('y', EXTEND_BAR_Y_AXIS)
                 break
             case SCATTER_CHART:
                 ctx.createAxisSection('y', EXTEND_SCATTER_Y_AXIS)
@@ -351,6 +360,8 @@ export default class Widget extends BaseComponent {
                 break
             case 'contour':
                 break
+            default:
+                throw new Error(`InvalidType: ${type} not supported.`)
         }
 
         ctx.updateDSourceColumns()
@@ -439,7 +450,8 @@ export default class Widget extends BaseComponent {
 
         switch (mode) {
             case FILE_MODE:
-                switch (config.chart.type) {
+                const type = config.chart.type
+                switch (type) {
                     case LINE_CHART:
                         ctx.processConfigSeries('y')
 
@@ -469,11 +481,14 @@ export default class Widget extends BaseComponent {
                         break
                     case 'contour':
                         break
+                    default:
+                        throw new Error(`InvalidType: ${type} not supported.`)
                 }
                 break
             case REALTIME_MODE:
                 break
             default:
+                throw new Error(`InvalidMode: ${mode} not supported.`)
         }
 
         ctx.saveConfig(config)
@@ -537,7 +552,8 @@ export default class Widget extends BaseComponent {
         input.mode.value = config.input.mode
 
         if (ctx.structure.edit) {
-            switch (config.input.mode) {
+            const mode = config.input.mode
+            switch (mode) {
                 case FILE_MODE:
                     ctx.loadData(config.data)
 
@@ -547,6 +563,8 @@ export default class Widget extends BaseComponent {
                     console.log('Connect to device')
 
                     break
+                default:
+                    throw new Error(`InvalidMode: ${mode} not supported.`)
             }
         }
 
@@ -670,7 +688,6 @@ export default class Widget extends BaseComponent {
             default:
                 throw new Error(`InvalidAction: ${type} file not supported.`)
         }
-
     }
 
     menuItemClick(e) {

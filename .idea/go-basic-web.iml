@@ -6,7 +6,8 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="D3" level="project" />
-    <orderEntry type="library" name="chart.js" level="application" />
     <orderEntry type="library" name="chartjs-adapter-date-fns" level="application" />
+    <orderEntry type="library" name="chart" level="project" />
+    <orderEntry type="library" name="Chart JS" level="project" />
   </component>
 </module>

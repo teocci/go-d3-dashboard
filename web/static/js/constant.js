@@ -6,6 +6,113 @@
 let mainModule
 let settings
 
+const INPUT_MODE_FILE = 'file'
+const INPUT_MODE_RT = 'realtime'
+
+const SCALE_TYPE_LINEAR = 'linear'
+const SCALE_TYPE_TIME = 'time'
+const SCALE_TYPE_LOGARITHMIC = 'log'
+const SCALE_TYPE_CATEGORICAL = 'category'
+const SCALE_TYPE_TIMESERIES = 'timeseries'
+
+const CHART_TYPE_LINE = 'line'
+const CHART_TYPE_BAR = 'bar'
+const CHART_TYPE_BUBBLE = 'bubble'
+const CHART_TYPE_SCATTER = 'scatter'
+const CHART_TYPE_CONTOUR = 'contour'
+
+const LINE_CURVE_TYPE_LINEAR = 'linear'
+const LINE_CURVE_TYPE_SMOOTH = 'smooth'
+const LINE_CURVE_TYPE_STEP = 'step'
+
+const MODE_TYPE_RADIO_ITEMS = [
+    {
+        id: 'di-type-file',
+        label: 'CSV 파일',
+        value: INPUT_MODE_FILE,
+        checked: true,
+    },
+    {
+        id: 'di-type-realtime',
+        label: '실시간',
+        value: INPUT_MODE_RT,
+        checked: false,
+    },
+]
+
+const SCALE_TYPE_RADIO_ITEMS = [
+    {
+        id: 'axis-scale-type-linear',
+        label: '선형',
+        value: SCALE_TYPE_LINEAR,
+        checked: true,
+    },
+    {
+        id: 'axis-scale-type-time',
+        label: '시계열',
+        value: SCALE_TYPE_TIME,
+        checked: false,
+    },
+    {
+        id: 'axis-scale-type-log',
+        label: '로그',
+        value: SCALE_TYPE_LOGARITHMIC,
+        checked: false,
+    },
+]
+
+const SCALE_TYPE_SELECT_ITEMS = [
+    {
+        label: '선형',
+        value: SCALE_TYPE_LINEAR,
+        selected: true,
+    },
+    {
+        label: '시계열',
+        value: SCALE_TYPE_TIME,
+    },
+    {
+        label: '로그',
+        value: SCALE_TYPE_LOGARITHMIC,
+    },
+]
+
+const CHART_TYPE_SELECT_ITEMS = [
+    {
+        label: 'Line Chart',
+        value: CHART_TYPE_LINE,
+        selected: true,
+    },
+    {
+        label: 'Bar Chart',
+        value: CHART_TYPE_BAR,
+    },
+    {
+        label: 'Bubble Chart',
+        value: CHART_TYPE_BUBBLE,
+    },
+    {
+        label: 'Scatter Chart',
+        value: CHART_TYPE_SCATTER,
+    },
+]
+
+const LINE_CURVE_TYPE_SELECT_ITEMS = [
+    {
+        label: '리니어',
+        value: LINE_CURVE_TYPE_LINEAR,
+        selected: true,
+    },
+    {
+        label: '스무스',
+        value: LINE_CURVE_TYPE_SMOOTH,
+    },
+    {
+        label: '스텝',
+        value: LINE_CURVE_TYPE_STEP,
+    },
+]
+
 const DEFAULT_STRUCTURE_SETTINGS = {
     input: {
         fieldset: {
@@ -18,20 +125,7 @@ const DEFAULT_STRUCTURE_SETTINGS = {
             legend: '타입',
             group: 'di-type',
             useFieldset: false,
-            inputs: [
-                {
-                    id: 'di-type-file',
-                    label: 'CSV 파일',
-                    value: 'file',
-                    checked: true,
-                },
-                {
-                    id: 'di-type-realtime',
-                    label: '실시간',
-                    value: 'realtime',
-                    checked: false,
-                },
-            ],
+            inputs: MODE_TYPE_RADIO_ITEMS,
         },
         file: {
             type: 'file',
@@ -60,25 +154,7 @@ const DEFAULT_STRUCTURE_SETTINGS = {
             type: 'select',
             id: 'chart-type',
             legend: '타입',
-            items: [
-                {
-                    label: 'Line Chart',
-                    value: 'line',
-                    selected: true,
-                },
-                {
-                    label: 'Bar Chart',
-                    value: 'bar',
-                },
-                {
-                    label: 'Bubble Chart',
-                    value: 'bubble',
-                },
-                {
-                    label: 'Scatter Chart',
-                    value: 'scatter',
-                },
-            ],
+            items: CHART_TYPE_SELECT_ITEMS,
         },
         title: {
             type: 'text',
@@ -125,26 +201,7 @@ const DEFAULT_AXIS = {
         legend: '스케일 타입',
         group: 'axis-scale-type',
         useFieldset: false,
-        inputs: [
-            {
-                id: 'axis-scale-type-linear',
-                label: '선형',
-                value: 'linear',
-                checked: true,
-            },
-            {
-                id: 'axis-scale-type-time',
-                label: '시계열',
-                value: 'time',
-                checked: false,
-            },
-            {
-                id: 'axis-scale-type-log',
-                label: '로그',
-                value: 'log',
-                checked: false,
-            },
-        ],
+        inputs: SCALE_TYPE_RADIO_ITEMS,
     },
 }
 
@@ -153,21 +210,7 @@ const EXTEND_LINE_Y_AXIS = {
         type: 'select',
         id: 'axis-curve',
         legend: '커브 타입',
-        items: [
-            {
-                label: '리니어',
-                value: 'linear',
-                selected: true,
-            },
-            {
-                label: '스무스',
-                value: 'smooth',
-            },
-            {
-                label: '스텝',
-                value: 'step',
-            },
-        ],
+        items: LINE_CURVE_TYPE_SELECT_ITEMS,
     },
     color: {
         type: 'color',
@@ -193,6 +236,38 @@ const EXTEND_LINE_Y_AXIS = {
         min: 0,
         max: 1,
         size: 2,
+    },
+}
+const EXTEND_BAR_Y_AXIS = {
+    width: {
+        type: 'number',
+        id: 'axis-border-width',
+        label: '두께',
+        value: 2,
+        step: .5,
+        min: 0,
+        max: 10,
+        size: 3,
+    },
+    opacity: {
+        type: 'number',
+        id: 'axis-background-opacity',
+        label: '투명도',
+        value: 1,
+        step: .1,
+        min: 0,
+        max: 1,
+        size: 2,
+    },
+    color: {
+        type: 'color',
+        id: 'axis-border-color',
+        label: '색상',
+    },
+    background: {
+        type: 'color',
+        id: 'axis-background-color',
+        label: '배경색',
     },
 }
 
@@ -284,21 +359,7 @@ const DEFAULT_LINE_ATTRIBUTES = [
         id: 'scale',
         label: '스케일',
         options: {
-            items: [
-                {
-                    label: '선형',
-                    value: 'linear',
-                    selected: true,
-                },
-                {
-                    label: '시계열',
-                    value: 'time',
-                },
-                {
-                    label: '로그',
-                    value: 'log',
-                },
-            ],
+            items: SCALE_TYPE_SELECT_ITEMS,
         },
     },
     {
@@ -306,21 +367,7 @@ const DEFAULT_LINE_ATTRIBUTES = [
         id: 'curve',
         label: '커브 타입',
         options: {
-            items: [
-                {
-                    label: '리니어',
-                    value: 'linear',
-                    selected: true,
-                },
-                {
-                    label: '스무스',
-                    value: 'smooth',
-                },
-                {
-                    label: '스텝',
-                    value: 'step',
-                },
-            ],
+            items: LINE_CURVE_TYPE_SELECT_ITEMS,
         },
     },
     {
@@ -360,6 +407,13 @@ const DEFAULT_LINE_ATTRIBUTES = [
         options: {},
     },
 ]
+
+const LINE_SERIES = {
+    fieldset: {
+        legend: '시리즈',
+    },
+    series: DEFAULT_LINE_ATTRIBUTES,
+}
 
 const DEFAULT_BAR_ATTRIBUTES = [
     {
@@ -448,13 +502,6 @@ const DEFAULT_BAR_ATTRIBUTES = [
         options: {},
     },
 ]
-
-const LINE_SERIES = {
-    fieldset: {
-        legend: '시리즈',
-    },
-    series: DEFAULT_LINE_ATTRIBUTES,
-}
 
 const FS_SETTINGS = {
     legend: '차트 설정',

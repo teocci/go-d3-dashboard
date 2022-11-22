@@ -70,8 +70,13 @@ type WebServer struct {
 	Port int `json:"port"`
 }
 
+type WSServer struct {
+	Port int `json:"port"`
+}
+
 type ServerSetup struct {
 	Web WebServer `json:"web"`
+	WS  WSServer  `json:"ws"`
 }
 
 var (

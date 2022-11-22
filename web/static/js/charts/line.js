@@ -3,68 +3,39 @@
  * Author: teocci@yandex.com on 2022-10월-18
  */
 import BaseChart from './base-chart.js'
-import ColorUtils from '../untils/color-utils.js'
 
 export default class Line extends BaseChart {
     static TAG = 'line'
 
     /**
      *
-     * @param rawX
-     * @param rawY
-     * @param raw
-     * @return {Object|null}
+     * @param axes
+     * @param data
+     * @param id
+     * @return {Object}
      */
-    parseDataset(rawX, rawY, raw) {
-        const {data} = super.parseDataset(rawX, rawY, raw)
+    parseDatasetParams(axes, data, id) {
+        console.log('parseDatasetParams', {axes})
+        const p = super.parseDatasetParams(axes, data)
+        p.curve = axes.y.curve || 'linear'
+        p.radius = data.length < 101 ? p.width : 0
+        console.log('parseDatasetParams', {p})
 
-        const yWidth = this.asNumber(rawY.width) || 1
-        const yOpacity = this.asNumber(rawY.opacity) || 1
-        const yCurve = rawY.curve || 'linear'
-        const yColor = rawY.color || '#F2495C'
-
-        const label = this.parseLabel(rawY)
-        const borderWidth = yWidth
-        const borderColor = ColorUtils.transparentize(yColor, yOpacity)
-        const backgroundColor = ColorUtils.transparentize(yColor, yOpacity)
-
-        const pointRadius = data.length > 100 ? 0 : yWidth
-
-        const cubicInterpolationMode = yCurve === 'linear' ? 'default' : 'monotone'
-        const stepped = yCurve === 'step'
-        const tension = yCurve === 'smooth' ? 0.2 : 0
-
-        return {
-            data,
-            label,
-            borderColor,
-            backgroundColor,
-            borderWidth,
-            pointRadius,
-            tension,
-            stepped,
-            cubicInterpolationMode,
-        }
+        return p
     }
 
     /**
      *
-     * @param config
+     * @param params
      * @return {Object|null}
      */
-    parseData(config) {
-        console.log({config})
-        const data = config.data
-        if (isNil(data)) return null
+    parseDatasetProperties(params) {
+        const p = super.parseDatasetProperties(params)
+        p.cubicInterpolationMode = params.curve === 'linear' ? 'default' : 'monotone'
+        p.stepped = params.curve === 'step'
+        p.tension = params.curve === 'smooth' ? 0.2 : 0
+        p.pointRadius = params.radius
 
-        const x = config.source.axis?.x ?? null
-        const series = config.source?.series ?? null
-        if (isNil(x) || isNil(series)) return null
-
-        const datasets = this.parseDataSeries(x, series, data)
-
-        return {
-            datasets,
-        }
+        return p
     }
 }

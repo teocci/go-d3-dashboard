@@ -50,11 +50,12 @@
 
     --summary-width: 280px;
     --modal-width: 940px;
-    --modal-height: 1000px;
+    --modal-height: 860px;
 
     --footer-height: 32px;
 
     --z-summary: 100;
+    --z-modal-outside: 190;
     --z-modal-bg: 200;
     --z-modal: 201;
 }

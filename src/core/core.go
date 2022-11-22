@@ -11,6 +11,7 @@ import (
 	"syscall"
 
 	"github.com/teocci/go-d3-dashboard/src/webserver"
+	"github.com/teocci/go-d3-dashboard/src/websocket"
 )
 
 func Start() error {
@@ -18,6 +19,7 @@ func Start() error {
 	fmt.Println("PID:", pid)
 
 	go webserver.Start()
+	go websocket.Start()
 
 	sigs := make(chan os.Signal, 1)
 	done := make(chan bool, 1)

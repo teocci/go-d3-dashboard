@@ -1,3 +1,5 @@
+import ColorUtils from '../untils/color-utils.js'
+
 /**
  * Created by RTT.
  * Author: teocci@yandex.com on 2022-10월-18
@@ -16,8 +18,11 @@ export default class BaseChart {
     constructor(canvas) {
         this.$canvas = canvas
 
-        this.settings = null
+        this.config = null
+
         this.groupedByX = true
+        this.mode = null
+        this.scales = null
     }
 
     get tag() {
@@ -25,41 +30,233 @@ export default class BaseChart {
     }
 
     get axisKeys() {
-        return {x: []}
+        return ['x', 'y']
     }
 
-    asDate = s => new Date(s).toISOString()
-    asNumber = s => {
-        const n = Number(s)
-        return isNumeric(n) ? n : null
+    init(config) {
+        if (isNil(config)) throw new Error('InvalidParameter: null config')
+
+        const type = config.chart.type
+        const data = this.parseMainData(config)
+        const options = this.parseOptions(config)
+        const plugins = this.loadPlugins()
+
+        this.config = {
+            type,
+            data,
+            options,
+            plugins,
+        }
     }
-    scaleFnc = t => t === 'time' ? this.asDate : this.asNumber
 
-    parseLabel(axis) {
-        const label = axis?.label || axis?.column || ''
-        const unit = isEmptyString(axis?.unit || '') ? '' : ` (${axis.unit})`
+    parseMainData(config) {
+        console.log({config})
+        this.mode = config.input.mode || INPUT_MODE_FILE
 
-        return `${label}${unit}`
+        const datasets = this.parseDatasets(config)
+        return {datasets}
+    }
+
+    parseOptions(config) {
+        const scales = this.parseScales(config)
+        const hover = {
+            mode: 'index',
+            intersect: false,
+        }
+        const legend = this.loadLegend()
+        const plugins = {
+            legend,
+        }
+
+        return {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales,
+            hover,
+            plugins,
+        }
+    }
+
+    loadLegend() {
+        const color = DEFAULT_LEGEND_LABEL_COLOR
+        const font = {
+            size: DEFAULT_LEGEND_LABEL_FONT_SIZE,
+        }
+
+        return {
+            display: true,
+            position: 'bottom',
+            labels: {
+                color,
+                font,
+            },
+        }
+    }
+
+    loadPlugins() {
+        const bg = {
+            id: 'custom_canvas_bg_color',
+            beforeDraw: chart => {
+                const {ctx} = chart
+                ctx.save()
+                ctx.globalCompositeOperation = 'destination-over'
+                ctx.fillStyle = DEFAULT_BG_COLOR
+                ctx.fillRect(0, 0, chart.width, chart.height)
+                ctx.restore()
+            },
+        }
+        const corsair = {
+            id: 'corsair',
+            defaults: {
+                width: 1,
+                color: '#f0f0f0',
+                dash: [3, 3],
+            },
+            afterInit: chart => {
+                chart.corsair = {
+                    x: 0,
+                    y: 0,
+                }
+            },
+            afterEvent: (chart, args) => {
+                const {inChartArea} = args
+                const {x, y} = args.event
+
+                chart.corsair = {x, y, draw: inChartArea}
+                chart.draw()
+            },
+            afterDraw: (chart, args, opts) => {
+                const {ctx} = chart
+                const {top, bottom, left, right} = chart.chartArea
+                const {x, y, draw} = chart.corsair
+                if (!draw) return
+
+                ctx.save()
+
+                ctx.beginPath()
+                ctx.lineWidth = opts.width
+                ctx.strokeStyle = opts.color
+                ctx.setLineDash(opts.dash)
+                ctx.moveTo(x, bottom)
+                ctx.lineTo(x, top)
+                ctx.moveTo(left, y)
+                ctx.lineTo(right, y)
+                ctx.stroke()
+
+                ctx.restore()
+            },
+        }
+        return [bg, corsair]
     }
 
     /**
      *
-     * @param rawX
-     * @param rawY
+     * @param config
+     * @return {Object|null}
+     */
+    parseDatasets(config) {
+        const axes = this.parseAxisConfig(config.source.axis)
+        if (isNil(axes.x) || isNil(axes.y)) return null
+
+        const {data} = config
+        return [this.parseDataset(axes, data)]
+    }
+
+    parseDataSeries(x, series, data) {
+        const datasets = []
+        for (const y of series) {
+            const axes = {x, y}
+            const item = this.parseDataset(axes, data)
+            console.log('parseDataSeries', {item})
+            datasets.push(item)
+        }
+
+        return datasets
+    }
+
+    parseDataset(axes, raw) {
+        console.log('parseDataset', {axes})
+        const data = this.parseDatasetData(axes, raw)
+        const params = this.parseDatasetParams(axes, data)
+        const properties = this.parseDatasetProperties(params)
+        console.log('parseDataset', {properties})
+
+        return {data, ...properties}
+    }
+
+    /**
+     *
+     * @param axes
      * @param raw
      * @return {Object}
      */
-    parseDataset(rawX, rawY, raw) {
-        const x = this.parseAxisScale(rawX)
-        const y = this.parseAxisScale(rawY)
+    parseDatasetData(axes, raw) {
+        const scales = this.parseAxesScales(axes)
+        if (isNil(scales)) return null
+        console.log('parseDatasetData', {scales})
 
-        if (isNil(x)) return null
-        if (isNil(y)) return null
+        if (this.isFileMode() && isNil(raw)) return null
+        const values = this.parseAxesData(scales, raw)
+        console.log('parseDatasetData', {values})
 
-        const values = this.parseXYDataset(x, y, raw)
-        const data = this.groupedByX ? this.groupXYByX(values) : values
+        return this.groupedByX ? this.groupByX(values) : values
+    }
 
-        return {data}
+    /**
+     *
+     * @param axes
+     * @param data
+     * @param id
+     * @return {Object}
+     */
+    parseDatasetParams(axes, data, id) {
+        const axis = axes[id || 'y']
+        const label = this.parseLabel(axis)
+        const width = this.asNumber(axis.width) || 1
+        const opacity = this.asNumber(axis.opacity) || 1
+        const bgOpacity = opacity
+
+        const color = axis.color || '#2f7878'
+        const bg = axis.background || '#4bc0c0'
+
+        return {
+            label,
+            width,
+            opacity,
+            bgOpacity,
+            color,
+            bg,
+        }
+    }
+
+    /**
+     *
+     * @param params
+     * @return {Object|null}
+     */
+    parseDatasetProperties(params) {
+        console.log('parseDatasetProperties', {params})
+
+        const label = params.label
+        const borderWidth = params.width
+        const borderColor = ColorUtils.transparentize(params.color, params.opacity)
+        const backgroundColor = ColorUtils.transparentize(params.bg, params.bgOpacity)
+
+        return {
+            label,
+            borderWidth,
+            borderColor,
+            backgroundColor,
+        }
+    }
+
+    parseAxisConfig(axes) {
+        const config = {}
+        const keys = this.axisKeys
+        for (const key of keys) {
+            config[key] = axes[key] ?? null
+        }
+        return config
     }
 
     parseAxisTitle(axis) {
@@ -77,7 +274,29 @@ export default class BaseChart {
         }
     }
 
+    parseLabel(axis) {
+        const label = axis?.label || axis?.column || ''
+        const unit = isEmptyString(axis?.unit || '') ? '' : ` (${axis.unit})`
+
+        return `${label}${unit}`
+    }
+
+    parseAxesScales(axes) {
+        if (isNil(axes)) return new Error('null axes')
+
+        const scales = {}
+        for (const key in axes) {
+            const scale = this.parseAxisScale(axes[key])
+            if (isNil(scale)) throw new Error(`${key} is null`)
+
+            scales[key] = scale
+        }
+
+        return scales
+    }
+
     parseAxisScale(raw) {
+        console.log('parseAxisScale', {raw})
         const key = raw.column ?? null
         if (isNil(key)) return null
 
@@ -92,26 +311,14 @@ export default class BaseChart {
         }
     }
 
-    parseXYDataset(x, y, raw) {
-        return raw.map(item => ({x: x.fnc(item[x.key]), y: y.fnc(item[y.key])}))
-    }
+    parseScales(config) {
+        const xAxis = config.source.axis.x
+        const yAxis = config.source.axis.y ?? null
 
-    groupXYByX(values) {
-        const mapper = new Map()
+        const x = this.parseScale(xAxis)
+        const y = this.parseScale(yAxis)
 
-        for (const value of values) {
-            if (mapper.has(value.x)) mapper.get(value.x).push(value.y)
-            else mapper.set(value.x, [value.y])
-        }
-
-        const data = []
-        for (const [x, a] of mapper.entries()) {
-            const sum = a.reduce((sum, v) => sum + v, 0)
-            const y = sum / a.length
-            data.push({x, y})
-        }
-
-        return data
+        return {x, y}
     }
 
     parseScale(axis) {
@@ -155,153 +362,37 @@ export default class BaseChart {
         }
     }
 
-    parseScales(config) {
-        const xAxis = config.source.axis.x
-        const yAxis = config.source.axis.y ?? null
-
-        const x = this.parseScale(xAxis)
-        const y = this.parseScale(yAxis)
-
-        return {x, y}
-    }
-
-    parseLegend() {
-        const color = DEFAULT_LEGEND_LABEL_COLOR
-        const font = {
-            size: DEFAULT_LEGEND_LABEL_FONT_SIZE,
-        }
-
-        return {
-            display: true,
-            position: 'bottom',
-            labels: {
-                color,
-                font,
-            },
-        }
-    }
-
-    parseDataSeries(x, series, data) {
-        const datasets = []
-        for (const raw of series) {
-            const item = this.parseDataset(x, raw, data)
-            datasets.push(item)
-        }
-
-        return datasets
-    }
-
-    parseData(config) {
-        console.log({config})
-        const data = config.data
-        if (isNil(data)) return null
-
-        const x = config.source.axis?.x ?? null
-        const y = config.source.axis?.y ?? null
-        if (isNil(x) && isNil(y)) return null
-
-        const datasets = [this.parseDataset(x, y, data)]
-
-        return {
-            datasets,
-        }
-    }
-
-    parseOptions(config) {
-        const scales = this.parseScales(config)
-        const hover = {
-            mode: 'index',
-            intersect: false,
-        }
-        const legend = this.parseLegend()
-        const plugins = {
-            legend,
-        }
-
-        return {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales,
-            hover,
-            plugins,
-        }
-    }
-
-    loadPlugins() {
-        const bg = {
-            id: 'custom_canvas_bg_color',
-            beforeDraw: chart => {
-                const {ctx} = chart
-                ctx.save()
-                ctx.globalCompositeOperation = 'destination-over'
-                ctx.fillStyle = DEFAULT_BG_COLOR
-                ctx.fillRect(0, 0, chart.width, chart.height)
-                ctx.restore()
-            },
-        }
-        const corsair = {
-            id: 'corsair',
-            defaults: {
-                width: 1,
-                color: '#f0f0f0',
-                dash: [3, 3],
-            },
-            afterInit: (chart, args, opts) => {
-                chart.corsair = {
-                    x: 0,
-                    y: 0,
-                }
-            },
-            afterEvent: (chart, args) => {
-                const {inChartArea} = args
-                const {type,x,y} = args.event
-
-                chart.corsair = {x, y, draw: inChartArea}
-                chart.draw()
-            },
-            afterDraw: (chart, args, opts) => {
-                const {ctx} = chart
-                const {top, bottom, left, right} = chart.chartArea
-                const {x, y, draw} = chart.corsair
-                if (!draw) return
-
-                ctx.save()
-
-                ctx.beginPath()
-                ctx.lineWidth = opts.width
-                ctx.strokeStyle = opts.color
-                ctx.setLineDash(opts.dash)
-                ctx.moveTo(x, bottom)
-                ctx.lineTo(x, top)
-                ctx.moveTo(left, y)
-                ctx.lineTo(right, y)
-                ctx.stroke()
-
-                ctx.restore()
+    parseAxesData(axes, data) {
+        return data.map(item => {
+            const row = {}
+            for (const key in axes) {
+                const axis = axes[key]
+                row[key] = axis.fnc(item[axis.key])
             }
-        }
-        return [bg, corsair]
+            return row
+        })
     }
 
-    init(config) {
-        if (isNil(config)) throw new Error('InvalidParameter: null config')
-
-        const type = config.chart.type
-        const data = this.parseData(config)
-        const options = this.parseOptions(config)
-        const plugins = this.loadPlugins()
-
-        this.settings = {
-            type,
-            data,
-            options,
-            plugins,
+    groupByX(values) {
+        const mapper = new Map()
+        for (const value of values) {
+            if (mapper.has(value.x)) mapper.get(value.x).push(value.y)
+            else mapper.set(value.x, [value.y])
         }
+
+        const data = []
+        for (const [x, a] of mapper.entries()) {
+            const sum = a.reduce((sum, v) => sum + v, 0)
+            const y = sum / a.length
+            data.push({x, y})
+        }
+
+        return data
     }
 
     render() {
-        console.log({settings: this.settings})
-        this.chart = new Chart(this.$canvas, this.settings)
+        console.log({settings: this.config})
+        this.chart = new Chart(this.$canvas, this.config)
     }
 
     resize() {
@@ -310,5 +401,37 @@ export default class BaseChart {
 
     destroy() {
         if (this.chart) this.chart.destroy()
+    }
+
+    asDate = s => new Date(s).toISOString()
+    asNumber = s => {
+        const n = Number(s)
+        return isNumeric(n) ? n : null
+    }
+
+    scaleFnc = type => {
+        switch (type) {
+            case SCALE_TYPE_LINEAR:
+            case SCALE_TYPE_LOGARITHMIC:
+                return this.asNumber
+
+            case SCALE_TYPE_TIME:
+            case SCALE_TYPE_TIMESERIES:
+                return this.asDate
+
+            case SCALE_TYPE_CATEGORICAL:
+                return String
+
+            default:
+                throw new Error(`InvalidAction: ${type} file not supported.`)
+        }
+    }
+
+    isRTMode() {
+        return this.mode === INPUT_MODE_RT
+    }
+
+    isFileMode() {
+        return this.mode === INPUT_MODE_FILE
     }
 }

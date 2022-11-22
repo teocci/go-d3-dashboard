@@ -17,20 +17,23 @@ const isString = s => 'string' === typeof s
 
 const isNull = o => o === null
 const isUndefined = o => o === undefined
-const isObjectInstance = o => isObject(o) && o.constructor === Object
+const isNil = o => o == null
+
 const isNumeric = n => (isNumber(n) && !isNaN(n)) || (isString(n) && !isNaN(n) && !isNaN(parseFloat(n)))
 
 const isEmptyString = s => isString(s) && !s.trim().length
 const isEmptyArray = a => isArray(a) && !a.length
-const isNil = o => o == null
-const isFalsy = o => !o
-const isTruthy = o => !!o
 const isEmptyObject = o => {
     if (isNil(o)) return false
     if (o.constructor !== Object) return false
     for (const i in o) return true
     return false
 }
+
+const isFalsy = o => !o
+const isTruthy = o => !!o
+
+const isObjectInstance = o => isObject(o) && o.constructor === Object
 const objectHasProperties = o => {
     if (o == null) return false
     if (o.constructor !== Object) return false
@@ -49,6 +52,7 @@ const toCamelCase = s => s && toSnakeCase(s).toLowerCase()
 const toPascalCase = s => s && trimSpaces(s).toLowerCase()
     .replace(REGEX_PASCAL_CASE, m => `${m.charAt(0).toUpperCase()}${m.substring(1).toLowerCase()}`)
 
+const classExtender = (base, c) => class c extends base{}
 const cloner = o => {
     let idx = 1
     const process = v => {
