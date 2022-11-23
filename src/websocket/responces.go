@@ -14,5 +14,6 @@ type RegisteredMessage struct {
 }
 
 type RegisteredData struct {
+	Name    string   `json:"name"`
 	Columns []string `json:"columns"`
 }

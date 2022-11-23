@@ -25,7 +25,7 @@ const (
 	pingPeriod = (pongWait * 9) / 10
 
 	// Poll file for changes with this period.
-	updatePeriod = 20 * time.Second
+	updatePeriod = 10 * time.Second
 
 	// Maximum message size allowed from peer.
 	maxMessageSize = 512
@@ -141,6 +141,7 @@ Events:
 				msg := &RegisteredMessage{
 					CMD: resClientRegistered,
 					Data: &RegisteredData{
+						Name:    iot.Name,
 						Columns: iotColumns,
 					},
 				}

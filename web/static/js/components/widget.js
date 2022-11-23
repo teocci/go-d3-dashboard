@@ -454,6 +454,10 @@ export default class Widget extends BaseComponent {
                 }
                 break
             case REALTIME_MODE:
+                ctx.processConfigAxis('y')
+
+                config.source.axis.r = null
+                config.source.axis.series = null
                 break
             default:
                 throw new Error(`InvalidMode: ${mode} not supported.`)
@@ -466,15 +470,31 @@ export default class Widget extends BaseComponent {
 
     loadData(d) {
         const config = this.structure.config
-        config.data = d
-        config.columns = d.columns
-        config.input.info = d.file
+        const mode = config.input.mode
+        let name
+        switch (mode) {
+            case FILE_MODE:
+                config.data = d
+                config.columns = d.columns
+                config.input.info = d.file
+                name = d.file.name || null
+                break
+            case REALTIME_MODE:
+                config.data = null
+                config.columns = d.columns
+                config.input.info.columns = d.columns
+                config.input.info.name = d.name
+                name = d.name || null
+                break
+            default:
+                throw new Error(`InvalidMode: ${mode} not supported.`)
+        }
 
         const form = this.structure.form
         form.state = FORM_STATE_DATA_SOURCE
 
         const chart = this.structure.chart
-        chart.title.value = config.chart.title || d.file.name || null
+        chart.title.value = config.chart.title || name
         chart.type.value = config.chart.type
         chart.fieldset.show()
 
@@ -592,11 +612,15 @@ export default class Widget extends BaseComponent {
         }
 
         input.connect.onClick = req => {
+            const config = ctx.structure.config
             const action = req.action
             switch (action) {
                 case InputConnection.STATUS_CONNECT:
-                    console.log({req})
+                    config.input.info = req
                     ctx.websocket = new WSClient(req)
+                    ctx.websocket.onEvents = message => {
+                        ctx.handleWSEvents(message)
+                    }
                     ctx.websocket.connect()
                     break
                 case InputConnection.STATUS_DISCONNECT:
@@ -629,6 +653,8 @@ export default class Widget extends BaseComponent {
     }
 
     removeWidget() {
+        this.websocket.disconnect()
+
         this.clearChart()
         this.deleteConfig()
     }
@@ -655,6 +681,24 @@ export default class Widget extends BaseComponent {
             this.chartPanel.render()
 
             this.state.value = Widget.STATE_DATA_RENDERED
+        }
+    }
+
+    handleWSEvents(message) {
+        const ctx = this
+        const cmd = message.cmd ?? null
+        switch (cmd) {
+            case WSClient.CMD_CLIENT_REGISTERED:
+                const data = message.data ?? null
+                if (isNil(data)) throw Error('InvalidMessage: null data')
+                ctx.loadData(data)
+                break
+            case WSClient.CMD_IOT_UPDATED:
+                if (isNil(this.chartPanel)) return
+                this.chartPanel.update(message.data)
+
+                break
+            default:
         }
     }
 

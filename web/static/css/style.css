@@ -12,6 +12,7 @@
 @import "series.css";
 @import "chart-panel.css";
 @import "dropdown.css";
+@import "connection.css";
 
 main {
     width: 100vw;

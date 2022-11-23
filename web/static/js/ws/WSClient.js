@@ -81,10 +81,18 @@ export default class WSClient extends BaseListener {
 
         this.connectionId = null
 
-        this.onEvents = () => {}
+        this._onEvents = () => {}
 
         for (name of EVENT_LIST) {
-            this.addListener(name, this.onEvents)
+            this.addListener(name, this._onEvents)
+        }
+    }
+
+    set onEvents(fnc) {
+        this._onEvents = fnc
+        this.removeAllListeners()
+        for (name of EVENT_LIST) {
+            this.addListener(name, fnc)
         }
     }
 
@@ -148,7 +156,7 @@ export default class WSClient extends BaseListener {
 
                 this.requestRegistration(message, message)
 
-                this.emit(EVENT_WS_CONNECTED, this.connectionId)
+                this.emit(EVENT_WS_CONNECTED, message)
 
                 console.log(`${CMD_WS_CONNECTED} successful`)
                 break
@@ -196,7 +204,10 @@ export default class WSClient extends BaseListener {
     }
 
     onClose(event) {
-        this.emit(EVENT_WS_DISCONNECTED)
+        const message = {
+            cmd: CMD_WS_DISCONNECTED,
+        }
+        this.emit(EVENT_WS_DISCONNECTED, message)
     }
 
     requestRegistration() {

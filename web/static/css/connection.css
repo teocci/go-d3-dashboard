@@ -1,0 +1,25 @@
+/**
+ * Created by RTT.
+ * Author: teocci@yandex.com on 2022-11월-23
+ */
+.connection {
+    display: flex;
+    gap: 1rem;
+}
+
+.address {
+    display: flex;
+    gap: 1rem;
+}
+
+.address > .iot-ip > input {
+    width: 120px;
+}
+
+.address > .iot-port > input {
+    width: 70px;
+}
+
+.address > .iot-id > input {
+    width: 40px;
+}

@@ -77,20 +77,28 @@ export default class ChartPanel {
 
         this.title = toPascalCase(config.chart.title)
 
-        this.chart = this.createChart(config.chart.type)
+        this.chart = this.createChart(config.chart.type, config.input.mode)
         this.chart.init(config)
     }
 
     /**
      *
      * @param type
-     * @returns {Line|Scatter|Bar|Bubble}
+     * @param mode
+     * @returns {Line|LineSeries|Scatter|Bar|Bubble}
      */
-    createChart(type) {
+    createChart(type, mode) {
         const $canvas = this.$canvas
         switch (type) {
             case Line.TAG:
-                return new LineSeries($canvas)
+                switch (mode) {
+                    case INPUT_MODE_FILE:
+                        return new LineSeries($canvas)
+                    case INPUT_MODE_RT:
+                        return new Line($canvas)
+                    default:
+                        throw new Error(`InvalidMode: ${mode} not supported.`)
+                }
             case Scatter.TAG:
                 return new Scatter($canvas)
             case Bar.TAG:
@@ -106,6 +114,12 @@ export default class ChartPanel {
         if (this.chart) {
             this.chart.render()
             this.chart.resize()
+        }
+    }
+
+    update(data) {
+        if (this.chart) {
+            this.chart.addData(data)
         }
     }
 

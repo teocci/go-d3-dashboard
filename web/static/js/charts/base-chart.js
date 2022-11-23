@@ -19,6 +19,7 @@ export default class BaseChart {
         this.$canvas = canvas
 
         this.config = null
+        this.binders = []
 
         this.groupedByX = true
         this.mode = null
@@ -195,7 +196,11 @@ export default class BaseChart {
         if (isNil(scales)) return null
         console.log('parseDatasetData', {scales})
 
+        this.loadBlinder(axes)
+
         if (this.isFileMode() && isNil(raw)) return null
+        if (this.isRTMode()) return null
+
         const values = this.parseAxesData(scales, raw)
         console.log('parseDatasetData', {values})
 
@@ -344,7 +349,7 @@ export default class BaseChart {
         const time = {
             displayFormats: {
                 datetime: 'yyyy-MM-d, HH:mm:ss',
-                millisecond: 'HH:mm:ss.SSS',
+                millisecond: 'mm:ss.SSS',
                 second: 'HH:mm:ss',
                 minute: 'HH:mm',
                 hour: 'HH',
@@ -390,6 +395,15 @@ export default class BaseChart {
         return data
     }
 
+    loadBlinder(axes) {
+        const b = {}
+        for (const key in axes) {
+            const axis = axes[key]
+            b[key] = axis.column
+        }
+        this.binders.push(b)
+    }
+
     render() {
         console.log({settings: this.config})
         this.chart = new Chart(this.$canvas, this.config)
@@ -397,6 +411,18 @@ export default class BaseChart {
 
     resize() {
         if (this.chart) this.chart.resize()
+    }
+
+    addData(data) {
+        const {x} = this.binders[0]
+        if (this.chart) {
+            this.chart.data.labels.push(data[x])
+            this.chart.data.datasets.forEach((dataset, i) => {
+                const {y} = this.binders[i]
+                dataset.data.push(data[y])
+            })
+            this.chart.update()
+        }
     }
 
     destroy() {

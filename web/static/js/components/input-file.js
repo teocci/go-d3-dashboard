@@ -73,6 +73,10 @@ export default class InputFile extends BaseInput {
         const info = `[${file.name} | ${this.returnFileSize(file.size)}]`
         console.log({info})
 
+        /**
+         *
+         * @type {string}
+         */
         const text = await file.text()
         const raw = d3.csvParse(text)
         fileInfo.textContent = info

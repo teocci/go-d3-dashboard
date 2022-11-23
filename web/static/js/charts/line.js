@@ -15,10 +15,11 @@ export default class Line extends BaseChart {
      * @return {Object}
      */
     parseDatasetParams(axes, data, id) {
+        const length = data?.length ?? 0
         console.log('parseDatasetParams', {axes})
         const p = super.parseDatasetParams(axes, data)
         p.curve = axes.y.curve || 'linear'
-        p.radius = data.length < 101 ? p.width : 0
+        p.radius = length < 101 ? p.width : 0
         console.log('parseDatasetParams', {p})
 
         return p

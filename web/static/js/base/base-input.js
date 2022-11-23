@@ -26,6 +26,7 @@ export default class BaseInput extends BaseComponent {
         this.options = simpleMerge(this.defaultOptions, options)
 
         this.initInput()
+        this.loadClasses()
     }
 
     get defaultOptions() {

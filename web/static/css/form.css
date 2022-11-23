@@ -62,7 +62,7 @@ form .form-footer {
     cursor: default;
 }
 
-.form-footer button:active {
+.form-footer button:not([disabled]):active {
     background-color: var(--main-accent-color);
     box-shadow: var(--main-darker-color-a20) 0 1px 0 inset;
 }
